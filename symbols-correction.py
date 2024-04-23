@@ -29,7 +29,7 @@ start_box_extraction = st.checkbox('Extract boxes coordinates', key='start-box-e
 if start_box_extraction:
     b.extract_boxes()
     st.write(f'Box extracted with rotation {degree} : dimension {b.box_coord.shape}')
-    st.image(b.plot_boxes(b.box_coord))
+    # st.image(b.plot_boxes(b.box_coord))
 
 start_roi_extraction = st.checkbox('Extract ROI content images', key='start-roi-extraction',
                                    help='First extract boxes coordinates',
@@ -45,37 +45,43 @@ if start_roi_extraction:
         ## Controllers
         controls = st.columns(2)
         with controls[0]:
-            label = st.radio("Sort by label :", ["Blank", "True", "Manual"], key='label-sorting')
+            label = st.radio("Sort by label :", ["Blank", "True"], key='label-sorting')
             if label == "Blank":
                 labels_fig = r.blank_labels
             elif label == "True":
                 labels_fig = r.true_labels
-            elif label == "Manual":
-                labels_fig = r.manual_labels
         with controls[1]:
-            row_size = st.select_slider("Row size:", range(1, 21), value=12)
+            row_size = st.select_slider("Row size:", range(1, 21), value=12, key='row-size-roi')
         img_display.roi_display(r.roi_symbols, labels_fig, row_size)
-        # ## Image plot
-        # for l in np.unique(labels_fig):
-        #     st.header(f'Label {l}')
-        #     label_mask = (labels_fig == l)
-        #     img_indices = np.where(label_mask)[0]
-        #     grid = st.columns(row_size)
-        #     col = 0
-        #     for i, pixels in enumerate(r.roi_symbols[img_indices]):
-        #         with grid[col]:
-        #             st.image(pixels, img_indices[i])
-        #             col = (col + 1) % row_size
 
 start_predictions = st.checkbox('Symbols identification', key='start-predictions',
                                    help='First extract ROI images',
                                    disabled=not start_roi_extraction)
 
-if start_predictions:
-    t = train.Trainer(r.roi_symbols)
-    t.redimension_pict()
-    e = evaluate.Evaluator(t.pict_redim, r.true_labels)
-    e.predictions()
-    st.image(e.plot_results(b.img_rot, b.box_coord[r.symbols_index]))
+# if start_predictions:
+#     t = train.Trainer(r.roi_symbols)
+#     t.redimension_pict()
+#     e = evaluate.Evaluator(t.pict_redim, r.true_labels)
+#     e.predictions()
+    # st.image(e.plot_results(b.img_rot, b.box_coord[r.symbols_index]))
+
+manual_correction = st.checkbox('Correct manually', key='manual-correction',
+                                   help='Correct results manually if identification is not correct',
+                                   disabled=not start_predictions)
+
+if manual_correction:
+    a = img_display.Annotation(r.roi_symbols, r.true_labels)
+    a.controllers()
+    a.set_manual_labels(r.true_labels)
+    if 'manual_labels' not in st.session_state:
+        st.session_state.manual_labels = r.true_labels
+    else:
+        a.set_manual_labels(st.session_state.manual_labels)
+    a.annotation_display()
+
+with st.expander("See corrections"):
+    controls = st.columns(2)
+    row_size = st.select_slider("Row size:", range(1, 21), value=12, key='row-size-correction')
+    img_display.roi_display(r.roi_symbols, a.manual_labels, row_size)
 
 st.write(st.session_state)

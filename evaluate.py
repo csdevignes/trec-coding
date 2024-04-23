@@ -29,3 +29,5 @@ class Evaluator:
         return image_copy
     def update_target(self, newtarget):
         self.y_test = newtarget
+    def update_manual_labels(self):
+        pass

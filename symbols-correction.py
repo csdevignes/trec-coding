@@ -58,12 +58,12 @@ start_predictions = st.checkbox('Symbols identification', key='start-predictions
                                    help='First extract ROI images',
                                    disabled=not start_roi_extraction)
 
-# if start_predictions:
-#     t = train.Trainer(r.roi_symbols)
-#     t.redimension_pict()
-#     e = evaluate.Evaluator(t.pict_redim, r.true_labels)
-#     e.predictions()
-    # st.image(e.plot_results(b.img_rot, b.box_coord[r.symbols_index]))
+if start_predictions:
+    t = train.Trainer(r.roi_symbols)
+    t.redimension_pict()
+    e = evaluate.Evaluator(t.pict_redim, r.true_labels)
+    e.predictions()
+    st.image(e.plot_results(b.img_rot, b.box_coord[r.symbols_index]))
 
 manual_correction = st.checkbox('Correct manually', key='manual-correction',
                                    help='Correct results manually if identification is not correct',
@@ -72,16 +72,18 @@ manual_correction = st.checkbox('Correct manually', key='manual-correction',
 if manual_correction:
     a = img_display.Annotation(r.roi_symbols, r.true_labels)
     a.controllers()
-    a.set_manual_labels(r.true_labels)
-    if 'manual_labels' not in st.session_state:
-        st.session_state.manual_labels = r.true_labels
-    else:
-        a.set_manual_labels(st.session_state.manual_labels)
+    a.update_labels()
     a.annotation_display()
 
 with st.expander("See corrections"):
     controls = st.columns(2)
     row_size = st.select_slider("Row size:", range(1, 21), value=12, key='row-size-correction')
     img_display.roi_display(r.roi_symbols, a.manual_labels, row_size)
+
+e.update_manual_labels(a.manual_labels)
+e.correction()
+st.write(f"Nombre d'erreurs dans le test {e.nb_erreurs} :")
+st.write(e.erreurs)
+
 
 st.write(st.session_state)

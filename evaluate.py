@@ -27,7 +27,10 @@ class Evaluator:
             else:
                 cv.rectangle(image_copy, (x, y), (x + w, y + h), (0, 0, 255), 3)
         return image_copy
-    def update_target(self, newtarget):
+    def update_true_labels(self, newtarget):
         self.y_test = newtarget
-    def update_manual_labels(self):
-        pass
+    def update_manual_labels(self, manual_labels):
+        self.manual_labels = manual_labels
+    def correction(self):
+        self.erreurs = set(self.manual_labels) - set(self.y_test)
+        self.nb_erreurs = len(self.erreurs)

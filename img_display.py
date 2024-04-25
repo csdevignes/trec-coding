@@ -20,8 +20,12 @@ class Annotation:
     def __init__(self, picts, labels):
         self.pict = picts
         self.true_labels = labels
-    def set_manual_labels(self, labels):
-        self.manual_labels = labels
+    def update_labels(self):
+        self.manual_labels = self.true_labels
+        if 'manual_labels' not in st.session_state:
+            st.session_state.manual_labels = self.true_labels
+        else:
+            self.manual_labels = st.session_state.manual_labels
     def controllers(self):
         self.row_size = st.select_slider("Row size:", range(1, 21), value=12, key='row-size-annotation')
     def update(self, img_index):

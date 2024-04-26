@@ -69,7 +69,7 @@ manual_correction = st.checkbox('Correct manually', key='manual-correction',
                                    help='Correct results manually if identification is not correct',
                                    disabled=not start_predictions)
 
-if manual_correction:
+if manual_correction: # Change this part to use a form: so that it does not update at every correction
     a = img_display.Annotation(r.roi_symbols, r.true_labels)
     a.controllers()
     a.update_labels()

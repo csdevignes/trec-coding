@@ -5,12 +5,15 @@ and extracting and plotting roi extracted from the sheet (Roiextract)
 import cv2 as cv
 import numpy as np
 import pandas as pd
+import streamlit as st
 from matplotlib import pyplot as plt
 import math
 class Boxdetection:
+
     def __init__(self, image_path = "b3_09"):
         self.img = cv.imread(image_path)
-    def plot_scan(self, image, lines = True):
+    @st.cache_data
+    def plot_scan(_self, image, lines = True):
         # Draw horizontal and vertical lines on a copy of the iamge, then returns it
         rows, cols, _ = image.shape
         img_lines = image.copy()

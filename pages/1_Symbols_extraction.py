@@ -3,6 +3,7 @@ TREC correction app - page 1
 This page aims to upload file, and extract images
 '''
 
+# TODO: replace checkbox with toggle
 
 import numpy as np
 import streamlit as st

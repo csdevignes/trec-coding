@@ -4,16 +4,19 @@ Contains functions for image display on streamlit web app
 import streamlit as st
 import numpy as np
 @st.cache_data
-def roi_display(image_list, label_list, row_size):
-    ## Image plot
-    for l in np.unique(label_list):
+def roi_display(image_list, label_list, row_size, excluded_indx=[]):
+    keeper_indx = [i for i in range(0, 200) if i not in excluded_indx]
+    image_list_filtered = image_list[keeper_indx]
+    label_list_filtered = label_list[keeper_indx]
+
+    for l in np.unique(label_list_filtered):
         st.header(f'Label {l}')
-        label_mask = (label_list == l)
+        label_mask = (label_list_filtered == l)
         img_indices = np.where(label_mask)[0]
         grid = st.columns(row_size)
         col = 0
-        for i, pixels in enumerate(image_list[img_indices]):
-             with grid[col]:
+        for i, pixels in enumerate(image_list_filtered[img_indices]):
+            with grid[col]:
                 st.image(pixels, img_indices[i])
                 col = (col + 1) % row_size
 

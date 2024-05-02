@@ -4,7 +4,20 @@ Whether this is for training or for making predictions
 '''
 import numpy as np
 import cv2 as cv
+import pandas as pd
 
+
+class Dataset:
+    def __init__(self, img, label):
+        self.pict = img
+        self.label = label
+        self.combine_data()
+    def combine_data(self):
+        pict_2d = self.pict.reshape(len(self.pict), -1)
+        self.dataset = np.concatenate((pict_2d, self.label[:, np.newaxis]), axis=1)
+    def convert_csv(self):
+        self.df = pd.DataFrame(self.dataset)
+        return self.df.to_csv(index=False, header=False).encode('utf-8')
 
 class Trainer:
     def __init__(self, data=None):

@@ -3,6 +3,7 @@ Contains functions for image display on streamlit web app
 '''
 import streamlit as st
 import numpy as np
+@st.cache_data
 def roi_display(image_list, label_list, row_size):
     ## Image plot
     for l in np.unique(label_list):

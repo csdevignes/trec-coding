@@ -11,7 +11,8 @@ import math
 class Boxdetection:
 
     def __init__(self, image_path = "b3_09"):
-        self.img = cv.imread(image_path)
+        #self.img = cv.imread(image_path)
+        self.img = cv.imdecode(image_path, cv.IMREAD_COLOR)
     @st.cache_data
     def plot_scan(_self, image, lines = True):
         # Draw horizontal and vertical lines on a copy of the iamge, then returns it
@@ -65,8 +66,9 @@ class Boxdetection:
             self.find_boxes(lower_TSt)
             max_box_detected = len(self.box_coord)
         self.reorder_boxes()
-    def plot_boxes(self, coord):
-        img_box = self.img_rot.copy()
+    @st.cache_data
+    def plot_boxes(_self, coord):
+        img_box = _self.img_rot.copy()
         if coord.ndim > 1:
             for gbox in coord:
                 x, y, w, h = gbox
@@ -105,8 +107,8 @@ class ROIExtract:
             self.roi_all.append(roi_img)
         self.roi_all = np.array(self.roi_all)
     def set_labels(self):
-        self.blank_labels = np.ones(200, dtype=int)
-        self.true_labels = np.array([3, 6, 4, 2, 9, 8, 7, 9, 1, 6, 3, 7, 6, 2, 5, 8, 4, 1, 9, 5,
+        self.blank_labels = np.zeros(200, dtype=int)
+        self.sheet_labels = np.array([3, 6, 4, 2, 9, 8, 7, 9, 1, 6, 3, 7, 6, 2, 5, 8, 4, 1, 9, 5,
                         2, 9, 6, 8, 1, 7, 5, 3, 4, 7, 2, 5, 3, 1, 9, 6, 7, 8, 2, 4,
                         6, 3, 7, 9, 5, 4, 8, 1, 2, 9, 8, 4, 1, 8, 7, 5, 9, 2, 6, 3,
                         1, 8, 5, 2, 4, 3, 9, 6, 7, 1, 5, 6, 7, 5, 1, 3, 4, 9, 8, 2,

@@ -5,6 +5,14 @@ import streamlit as st
 import numpy as np
 @st.cache_data
 def roi_display(image_list, label_list, row_size, excluded_indx=[]):
+    '''
+    Display function used to show all symbols images ordered by labels
+    :param image_list: array of X images (X, height, width)
+    :param label_list: array of X labels (X,)
+    :param row_size:
+    :param excluded_indx:
+    :return:
+    '''
     keeper_indx = [i for i in range(0, 200) if i not in excluded_indx]
     image_list_filtered = image_list[keeper_indx]
     label_list_filtered = label_list[keeper_indx]

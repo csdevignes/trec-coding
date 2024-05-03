@@ -5,7 +5,10 @@ This page aims to annotate images with correct number labels
 import numpy as np
 import streamlit as st
 import img_display
+import sidebar
 import train
+
+sidebar.sidebar_progress()
 
 if 'uploaded_file_name' in st.session_state:
     st.write(f"Fichier analysé : {repr(st.session_state['uploaded_file_name'])}")
@@ -38,7 +41,9 @@ else:
             elif label == "Annotations":
                 labels_fig = st.session_state['annot_labels']
         with controls[1]:
-            row_size = st.select_slider("Row size:", range(1, 21), value=12, key='row-size-roi2')
+            size_match = {20: "Petit", 12: "Moyen", 6: "Grand"}
+            row_size = st.select_slider("Taille:", [20, 12, 6], format_func=lambda x: size_match[x], value=12,
+                                        key='row-size-annot')
         with controls[2]:
             exclude_exemple = st.checkbox("Exclure les cases exemple", key='exclude-exemple')
             if exclude_exemple:

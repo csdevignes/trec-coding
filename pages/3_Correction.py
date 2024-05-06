@@ -5,6 +5,8 @@ This page aims to correct scanned resultsheet and analyse results
 
 import numpy as np
 import streamlit as st
+
+import evaluate
 import sidebar
 import train
 
@@ -28,20 +30,20 @@ else:
         submitted_c = st.form_submit_button("Submit")
         if submitted_c:
             st.session_state['correct_labels'] = st.session_state[labels_toload]
-            st.write("Labels de départ :", st.session_state['labels_toload_annot'])
+            st.write("Labels de départ :", st.session_state['labels_toload_correct'])
 
 
     def update_label(img_indice):
-        st.session_state.annot_labels[img_indice + 9] = st.session_state[f'c_symbol{img_indice}']
+        st.session_state.correct_labels[img_indice + 9] = st.session_state[f'c_symbol{img_indice}']
 
     st.title("Corriger")
     if st.session_state['exclude-exemple'] == True:
         excluded_index = range(9)
     else:
         excluded_index = []
-    keeper_indx = [i for i in range(0, 200) if i not in excluded_index]
-    image_list_filtered = st.session_state['roi_symbols'][keeper_indx]
-    label_list_filtered = st.session_state['correct_labels'][keeper_indx]
+    keeper_index = [i for i in range(0, 200) if i not in excluded_index]
+    image_list_filtered = st.session_state['roi_symbols'][keeper_index]
+    label_list_filtered = st.session_state['correct_labels'][keeper_index]
 
     size_match = {20: "Petit", 12: "Moyen", 6: "Grand"}
     row_size = st.select_slider("Taille:", [20, 12, 6], format_func=lambda x: size_match[x], value=12,
@@ -63,16 +65,22 @@ else:
                                 label_visibility="collapsed")
                 col = (col + 1) % row_size
 
-if 'correct_labels' in st.session_state:
-    keeper_index = [i for i in range(0, 200) if i not in excluded_index]
-    d = train.Dataset(st.session_state['roi_symbols'][keeper_index], st.session_state['correct_labels'][keeper_index])
-    st.write(d.dataset.shape)
-    file_name = st.session_state["uploaded_file_name"].split('.')[0]
-    st.download_button(
-        label="Download .csv dataset",
-        data=d.convert_csv(),
-        file_name=f'{file_name}.csv',
-        mime="text/csv"
-    )
+    if 'correct_labels' in st.session_state:
+        st.header("Résultats :")
+        e = evaluate.Evaluator(st.session_state['roi_symbols'][keeper_index], st.session_state['sheet_labels'][keeper_index])
+        e.update_manual_labels(st.session_state['correct_labels'][keeper_index])
+        e.correction()
+        st.write(e.y_test)
+        st.write(e.manual_labels)
+        st.write(f'Erreurs : {e.erreurs}')
+        d = train.Dataset(st.session_state['roi_symbols'][keeper_index], st.session_state['correct_labels'][keeper_index])
+        st.write(d.dataset.shape)
+        file_name = st.session_state["uploaded_file_name"].split('.')[0]
+        st.download_button(
+            label="Download .csv dataset",
+            data=d.convert_csv(),
+            file_name=f'{file_name}.csv',
+            mime="text/csv"
+        )
 
 st.write(st.session_state)

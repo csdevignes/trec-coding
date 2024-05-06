@@ -14,4 +14,4 @@ st.set_page_config(
 sidebar.sidebar_progress()
 
 st.markdown("""# trec-coding 
-Symbols classification for automatic correction for the coding part of the TREC psychometric test""")
+Classification des symboles pour la correction du test de codage du TREC""")

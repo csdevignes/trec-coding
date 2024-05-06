@@ -16,13 +16,13 @@ class Evaluator:
         self.y_predicted = model.predict(self.X_test)
         self.y_predicted_labels = [int(np.argmax(i) + 1) if max(i) > 0.7 else 0 for i in self.y_predicted]
 
-    def plot_results(self, image, boxes):
+    def plot_results(self, image, boxes, labels):
         image_copy = image.copy()
         for i, gbox in enumerate(boxes):
             x, y, w, h = gbox
-            if (self.y_predicted_labels[i] == 0):
+            if (labels[i] == 0):
                 cv.rectangle(image_copy, (x, y), (x + w, y + h), (255, 0, 0), 3)
-            elif (self.y_predicted_labels[i] == self.y_test[i]):
+            elif (labels[i] == self.y_test[i]):
                 cv.rectangle(image_copy, (x, y), (x + w, y + h), (0, 255, 0), 3)
             else:
                 cv.rectangle(image_copy, (x, y), (x + w, y + h), (0, 0, 255), 3)
@@ -32,5 +32,5 @@ class Evaluator:
     def update_manual_labels(self, manual_labels):
         self.manual_labels = manual_labels
     def correction(self):
-        self.erreurs = set(self.manual_labels) - set(self.y_test)
+        self.erreurs = [l for i, l in enumerate(self.manual_labels) if l != self.y_test[i]]
         self.nb_erreurs = len(self.erreurs)

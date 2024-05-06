@@ -10,6 +10,7 @@ st.set_page_config(
     page_icon="👋",
 )
 
+
 sidebar.sidebar_progress()
 
 st.markdown("""# trec-coding 

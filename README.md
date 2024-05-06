@@ -5,6 +5,7 @@ Symbols classification for automatic correction for the coding part of the TREC 
 
 To run app in local, use ``streamlit run treccoding.py``
 
-## Acknowledgements
+## Improvements
 
-Code to draw grid lines was adapted from [Mathandy](https://gist.github.com/mathandy/389ddbad48810d188bdc997c3a1dab0c)
+* Annotation : Find a way to reinitialize annotation number inputs
+* Extraction : Add possibility to loop in threshold up or down (in case of detection problem)

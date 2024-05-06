@@ -12,6 +12,7 @@ import sidebar
 
 sidebar.sidebar_progress()
 
+
 def store_value(key):
     st.session_state[key] = st.session_state["_"+key]
 def load_value(key):
@@ -47,7 +48,6 @@ if uploaded_file is not None:
         st.session_state['box_coord'] = b.box_coord
     if st.button("Détecter les boites"):
         box_extraction_process()
-
     start_roi_extraction = 'box_coord' in st.session_state and len(st.session_state.get('box_coord', [])) == 400
 
     if start_roi_extraction:
@@ -65,14 +65,15 @@ if 'roi_symbols' in st.session_state:
     with st.expander("Voir/Cacher les symboles extraits"):
         controls = st.columns(2)
         with controls[0]:
-            label2 = st.radio("Tri par label :", ["Vide", "Numéros"], key='label-sorting2')
-            if label2 == "Vide":
-                labels_fig2 = st.session_state['blank_labels']
-            elif label2 == "Numéros":
-                labels_fig2 = st.session_state['sheet_labels']
+            label_match = {'blank_labels': "Vides (zeros)",
+                           'sheet_labels': "Numéros de la feuille"}
+            labels_display_code = st.radio("Charger les labels :", ['blank_labels', 'sheet_labels'],
+                                         format_func=lambda x: label_match[x], key="labels_display")
+            labels_display = st.session_state[labels_display_code]
+
         with controls[1]:
             size_match = {20: "Petit", 12: "Moyen", 6: "Grand"}
             row_size = st.select_slider("Taille:", [20, 12, 6], format_func=lambda x: size_match[x], value=12, key='row-size-roi')
-        img_display.roi_display(st.session_state['roi_symbols'], labels_fig2, row_size)
+        img_display.roi_display(st.session_state['roi_symbols'], labels_display, row_size)
 
 st.write(st.session_state)

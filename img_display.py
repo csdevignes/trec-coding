@@ -32,33 +32,53 @@ class Annotation:
     def __init__(self, picts, labels):
         self.pict = picts
         self.true_labels = labels
-    def update_labels(self):
         self.manual_labels = self.true_labels
+    def update_labels(self):
         if 'manual_labels' not in st.session_state:
             st.session_state.manual_labels = self.true_labels
         else:
             self.manual_labels = st.session_state.manual_labels
     def controllers(self):
-        self.row_size = st.select_slider("Row size:", range(1, 21), value=12, key='row-size-annotation')
+        controls = st.columns(3)
+        with controls[0]:
+            label = st.radio("Tri par label :", ["Vide", "Numéros", "Annotations"], key='label-sorting2')
+            if label == "Vide":
+                labels_fig = st.session_state['blank_labels']
+            elif label == "Numéros":
+                labels_fig = st.session_state['sheet_labels']
+            elif label == "Annotations":
+                labels_fig = st.session_state['annot_labels']
+        with controls[1]:
+            size_match = {20: "Petit", 12: "Moyen", 6: "Grand"}
+            self.row_size = st.select_slider("Taille:", [20, 12, 6], format_func=lambda x: size_match[x], value=12,
+                                        key='row-size-annot-m')
+        with controls[2]:
+            exclude_exemple = st.checkbox("Exclure les cases exemple", key='exclude-exemple')
+            if exclude_exemple:
+                excluded_index = range(9)
     def update(self, img_index):
         self.manual_labels[img_index] = st.session_state[f'symbol{img_index}']
         if st.session_state.manual_labels[img_index] != self.manual_labels[img_index]:
             st.session_state.manual_labels[img_index] = self.manual_labels[img_index]
     def annotation_display(self):
-        for l in np.unique(self.true_labels):
+        keeper_indx = [i for i in range(0, 200) if i not in excluded_indx]
+        image_list_filtered = self.pict[keeper_indx]
+        label_list_filtered = self.true_labels[keeper_indx]
+
+        for l in np.unique(label_list_filtered):
             st.header(f'Label {l}')
-            label_mask = (self.true_labels == l)
-            self.img_indices = np.where(label_mask)[0]
+            label_mask = (label_list_filtered == l)
+            img_indices = np.where(label_mask)[0]
             grid = st.columns(self.row_size)
             col = 0
-            for i, pixels in enumerate(self.pict[self.img_indices]):
-                 with grid[col]:
-                    st.image(pixels, self.img_indices[i])
-                    st.number_input(f"Symbol{self.img_indices[i]}", min_value=0, max_value=9,
-                                    value=self.manual_labels[self.img_indices[i]],
-                                    key=f"symbol{self.img_indices[i]}",
+            for i, pixels in enumerate(image_list_filtered[img_indices]):
+                with grid[col]:
+                    st.image(pixels, img_indices[i])
+                    st.number_input(f"Symbol{img_indices[i]}", min_value=0, max_value=9,
+                                    value=self.manual_labels[img_indices[i]],
+                                    key=f"symbol{img_indices[i]}",
                                     help="Enter label between 1 and 9 or 0 for errors",
-                                    on_change= self.update, args=[self.img_indices[i]],
+                                    on_change= self.update, args=[img_indices[i]],
                                     label_visibility="collapsed")
                     col = (col + 1) % self.row_size
 

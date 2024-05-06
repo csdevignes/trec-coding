@@ -1,10 +1,9 @@
 '''
-TREC correction app - page 1
+TREC correction app - page 2
 This page aims to annotate images with correct number labels
 '''
 import numpy as np
 import streamlit as st
-import img_display
 import sidebar
 import train
 

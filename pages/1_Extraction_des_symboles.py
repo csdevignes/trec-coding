@@ -32,7 +32,7 @@ if uploaded_file is not None:
 # Box extraction
     @st.experimental_fragment
     def box_extraction_process():
-        b.extract_boxes()
+        b.extract_boxes_fast()
         st.write(f"Boites extraites avec la rotation {st.session_state['ex_rotation-degree']} : dimensions {b.box_coord.shape}")
         with st.expander("Voir/Cacher les boites détectées"):
             st.image(b.plot_boxes(b.box_coord))

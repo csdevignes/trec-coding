@@ -71,6 +71,7 @@ class Boxdetection:
                 aspect_ratio = w/h
                 if aspect_ratio <= 1.15:
                     self.box_coord.append((x, y, w, h))
+        self.box_coord = np.array(self.box_coord)
     def align_boxes(self):
         '''
         Align boxes horizontally and vertically by replacing the given coordinates
@@ -90,9 +91,24 @@ class Boxdetection:
         # Final reordering
         boxdf_sorted = boxdf_sorted.sort_values(by=['y', 'x'], ignore_index=True)
         self.box_coord = boxdf_sorted.to_numpy()
-    def extract_boxes(self):
+    def extract_boxes_fast(self):
         '''
         Iteration among thresholds for binary image, to find the one that
+        will allow for the detection of all the boxes (400). Then reorder
+        the box list top to bottom, and perform box alignment.
+        '''
+        max_box_detected = 0
+        lower_TSt = 160
+        while (max_box_detected) != 400 and (lower_TSt >= 0):
+            lower_TSt -= 5
+            self.find_boxes(lower_TSt)
+            max_box_detected = len(self.box_coord)
+        self.box_coord = np.array(self.box_coord)
+        self.box_coord = np.flip(self.box_coord, axis=0)
+        self.align_boxes()
+    def extract_boxes_ext(self):
+        '''
+        Iteration among all possible thresholds for binary image, to find the one that
         will allow for the detection of all the boxes (400). Then reorder
         the box list top to bottom, and perform box alignment.
         '''

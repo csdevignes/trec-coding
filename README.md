@@ -10,5 +10,5 @@ Link to app on streamlit community cloud [here](https://trec-coding.streamlit.ap
 
 * Extraction : Add possibility to loop in threshold up or down (in case of detection problem)
 * Extraction : Display scanned resultsheet in transparency to see the grid better, and grid in black lines
-* Extraction : Threshold : Tester les valeurs qui marche pour toutes les feuilles. Détecter 5 par 5?
-* Correction : Fix error quantification
+* Correction : Aim of correction is to have the total number of filled boxes - number of errors
+* * We can obtain this total number of filled boxes by using the mean pixel intensity

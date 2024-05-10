@@ -30,9 +30,8 @@ else:
                                st.session_state['sheet_labels'][st.session_state['co_keeper_indx']])
         e.update_manual_labels(st.session_state['correct_labels'][st.session_state['co_keeper_indx']])
         e.correction()
-        st.write(e.y_test)
-        st.write(e.manual_labels)
-        st.write(f'Erreurs : {e.erreurs}')
+        st.write(f'Erreurs indices : {e.erreurs}')
+        st.write(f"Nombre d'erreurs : {e.nb_erreurs}")
         d = train.Dataset(st.session_state['ex_roi_symbols'][st.session_state['co_keeper_indx']],
                           st.session_state['correct_labels'][st.session_state['co_keeper_indx']])
         st.write(d.dataset.shape)

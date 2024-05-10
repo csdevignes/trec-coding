@@ -32,5 +32,5 @@ class Evaluator:
     def update_manual_labels(self, manual_labels):
         self.manual_labels = manual_labels
     def correction(self):
-        self.erreurs = [l for i, l in enumerate(self.manual_labels) if l != self.y_test[i]]
+        self.erreurs = [i for i, l in enumerate(self.manual_labels) if l != self.y_test[i]]
         self.nb_erreurs = len(self.erreurs)

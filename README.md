@@ -8,9 +8,7 @@ Link to app on streamlit community cloud [here](https://trec-coding.streamlit.ap
 
 ## Improvements
 
-* Annotation : Find a way to reinitialize annotation number inputs
-* Rename all variable to add the name of the module at the beginning
 * Extraction : Add possibility to loop in threshold up or down (in case of detection problem)
 * Extraction : Display scanned resultsheet in transparency to see the grid better, and grid in black lines
 * Extraction : Threshold : Tester les valeurs qui marche pour toutes les feuilles. Détecter 5 par 5?
-* Factorize annotation/correction module
+* Correction : Fix error quantification

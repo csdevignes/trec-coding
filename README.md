@@ -8,7 +8,7 @@ Link to app on streamlit community cloud [here](https://trec-coding.streamlit.ap
 
 ## Improvements
 
-* Extraction : Add possibility to loop in threshold up or down (in case of detection problem)
 * Extraction : Display scanned resultsheet in transparency to see the grid better, and grid in black lines
 * Correction : Aim of correction is to have the total number of filled boxes - number of errors
 * * We can obtain this total number of filled boxes by using the mean pixel intensity
+* Add the possibility to take a picture of the scanned result sheet

@@ -6,11 +6,11 @@ import numpy as np
 import streamlit as st
 
 import img_display
-import sidebar
+import tcutil
 import train
 
-sidebar.sidebar_progress()
-sidebar.sidebar_legend()
+tcutil.sidebar_progress()
+tcutil.sidebar_legend()
 
 if 'uploaded_file_name' in st.session_state:
     st.write(f"Fichier analysé : {repr(st.session_state['uploaded_file_name'])}")

@@ -2,9 +2,13 @@
 This file contains methods for image processing before giving them to the neural network
 Whether this is for training or for making predictions
 '''
+import math
+import os
+
 import numpy as np
 import cv2 as cv
 import pandas as pd
+from matplotlib import pyplot as plt
 
 
 class Dataset:
@@ -20,22 +24,85 @@ class Dataset:
         return self.df.to_csv(index=False, header=False).encode('utf-8')
 
 class Trainer:
-    def __init__(self, data=None):
-        if data is not None:
-            self.pict = data
+    def __init__(self, pict=None, data = None, datapath = None):
+        if pict is not None:
+            self.pict = pict
+        elif data is not None:
+            self.full_da = data
+            self.split_labels()
+        elif datapath is not None:
+            self.load_dataset(datapath)
+            self.split_labels()
+        self.redimension_pict()
     def load_dataset(self, datapath):
-        # Iterates into folder to load all data csv files
-        self.full_da = np.ones(3412, 6233)
+        '''
+        Used when loading a saved dataset (pict + label)
+        '''
+        self.full_da = None
+        for filename in os.listdir(datapath):
+            if filename.endswith('.csv'):
+                if self.full_da is None:
+                    self.full_da = np.loadtxt(f'{datapath}{filename}', dtype="int32", delimiter=',')
+                else:
+                    da = np.loadtxt(f'{datapath}{filename}', dtype="int32", delimiter=',')
+                    self.full_da = np.append(self.full_da, da, axis=0)
+            else:
+                continue
     def split_labels(self):
-        # Split full dataset into pictures and labels dataset
+        '''
+        Used when loading a saved dataset (pict + label)
+        '''
         self.pict, self.label = np.split(self.full_da, [6232], axis = 1)
+        self.label = self.label.reshape((len(self.label),)).astype(np.int32)
         self.pict = self.pict.reshape((len(self.pict), 76, 82))
-    def redimension_pict(self):
-        self.new_size = (56, 56)
+    def redimension_pict(self, size=(28, 28)):
+        self.size = size
         self.pict = self.pict.astype(np.float32)
         self.pict = self.pict.reshape(-1, self.pict.shape[1], self.pict.shape[2], 1)
-        self.pict_redim = np.empty((len(self.pict), 56, 56))
+        self.pict_redim = np.empty((len(self.pict), self.size[0], self.size[1]))
         for i in range(len(self.pict)):
-            img_resized = cv.resize(self.pict[i], self.new_size, interpolation=cv.INTER_AREA)
+            img_resized = cv.resize(self.pict[i], self.size, interpolation=cv.INTER_AREA)
             self.pict_redim[i] = img_resized
         self.pict_redim = self.pict_redim / 255
+    def plot_mpi(self):
+        mean_pix = self.full_da[:, :-1].mean(axis=1)
+        labels = self.full_da[:, -1]
+        jitter = np.random.normal(0, 0.1, size=len(labels))
+        plt.plot(labels + jitter, mean_pix, 'o')
+        plt.xlabel('Labels')
+        plt.ylabel('Moyenne')
+        plt.show()
+
+    def visualize_symbols(self, labels, imgperrow=12):
+        for l in np.unique(labels):
+            label_mask = (labels == l)
+            img_indices = np.where(label_mask)[0]
+
+            n_rows = math.ceil(len(self.pict_redim[img_indices]) / imgperrow)
+            fig, axs = plt.subplots(n_rows, imgperrow, figsize=(imgperrow, n_rows))
+
+            for i, pixels in enumerate(self.pict_redim[img_indices]):
+                row = i // imgperrow
+                col = i % imgperrow
+                ax = axs[row, col]
+                ax.imshow(pixels, cmap='gray')
+                ax.text(0.5, 1.02, str(img_indices[i]), transform=ax.transAxes, ha='center', va='bottom', fontsize=10)
+                ax.axis('off')
+            fig.suptitle(f'Label {l}', fontsize=16)
+            fig.subplots_adjust(top=0.75)
+            plt.show()
+
+    def visualize_random_samples(self, y = None, num_samples=5):
+        sample_indices = np.random.choice(len(self.pict_redim), num_samples, replace=False)
+        fig, axes = plt.subplots(1, num_samples, figsize=(12, 3))
+        for i, idx in enumerate(sample_indices):
+            axes[i].imshow(self.pict_redim[idx], cmap='gray')
+            if y is not None:
+                axes[i].set_title(f"Label: {y[idx]}")
+            axes[i].axis('off')
+        plt.tight_layout()
+        plt.show()
+
+if __name__ == "__main__":
+    t = Trainer(None, "data_resultsheets/Test/")
+    t.visualize_random_samples(t.label)

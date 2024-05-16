@@ -7,9 +7,10 @@ This page aims to upload file, and extract images
 import numpy as np
 import streamlit as st
 import extract
-import sidebar
+import tcutil
 
-sidebar.sidebar_progress()
+tcutil.sidebar_progress()
+tcutil.set_labels()
 
 # Loading and rotating scan
 uploaded_file = st.file_uploader("Upload feuille de résultat (format png)", type=['png'])

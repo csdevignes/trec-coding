@@ -12,3 +12,4 @@ Link to app on streamlit community cloud [here](https://trec-coding.streamlit.ap
 * Correction : Aim of correction is to have the total number of filled boxes - number of errors
 * * We can obtain this total number of filled boxes by using the mean pixel intensity
 * Add the possibility to take a picture of the scanned result sheet
+* Jupyter part : factorize by adding modules to import for extraction, visualisation...

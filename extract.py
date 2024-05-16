@@ -157,7 +157,6 @@ class ROIExtract:
         self.number_index = np.setdiff1d(self.all_index, self.symbols_index)
         self.width = 87
         self.height = 80
-        self.set_labels()
     def extract_roi_inside_box(self, coord):
         '''
         Extract image (ROI) located inside given coordinates, on the scanned image
@@ -190,19 +189,5 @@ class ROIExtract:
             roi_img = self.extract_roi_inside_box(coord)
             self.roi_all.append(roi_img)
         self.roi_all = np.array(self.roi_all)
-    def set_labels(self):
-        '''
-        Define default labels usable for all result sheet.
-        '''
-        self.blank_labels = np.zeros(200, dtype=int)
-        self.sheet_labels = np.array([3, 6, 4, 2, 9, 8, 7, 9, 1, 6, 3, 7, 6, 2, 5, 8, 4, 1, 9, 5,
-                        2, 9, 6, 8, 1, 7, 5, 3, 4, 7, 2, 5, 3, 1, 9, 6, 7, 8, 2, 4,
-                        6, 3, 7, 9, 5, 4, 8, 1, 2, 9, 8, 4, 1, 8, 7, 5, 9, 2, 6, 3,
-                        1, 8, 5, 2, 4, 3, 9, 6, 7, 1, 5, 6, 7, 5, 1, 3, 4, 9, 8, 2,
-                        9, 7, 4, 6, 8, 2, 1, 5, 3, 2, 9, 8, 4, 3, 6, 7, 2, 5, 9, 1,
-                        4, 6, 1, 5, 3, 9, 2, 7, 8, 5, 6, 3, 9, 4, 5, 2, 6, 7, 1, 8,
-                        5, 2, 8, 1, 7, 6, 3, 4, 9, 8, 1, 2, 6, 9, 8, 1, 5, 3, 4, 7,
-                        3, 5, 2, 4, 9, 1, 7, 8, 6, 4, 3, 1, 8, 7, 2, 4, 3, 6, 5, 9,
-                        7, 1, 9, 3, 6, 8, 4, 2, 5, 6, 7, 9, 2, 6, 3, 8, 1, 4, 7, 5,
-                        8, 4, 3, 7, 2, 5, 6, 9, 1, 3, 4, 7, 5, 2, 4, 9, 8, 1, 3, 6])
+
 

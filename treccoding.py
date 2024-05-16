@@ -5,7 +5,7 @@ Multipage version of the streamlit app
 import streamlit as st
 import extract
 import img_display
-import sidebar
+import tcutil
 import numpy as np
 
 st.set_page_config(
@@ -14,7 +14,8 @@ st.set_page_config(
 )
 
 
-sidebar.sidebar_progress()
+tcutil.sidebar_progress()
+tcutil.set_labels()
 
 st.markdown("""# trec-coding 
 Classification des symboles pour la correction du test de codage du TREC""")
@@ -63,7 +64,6 @@ if uploaded_file is not None:
             store_roi_symbols()
 
 if 'ex_roi_symbols' in st.session_state:
-
         img_display.roi_display(prefix="ex")
         st.write("Continuer avec la correction ou l'annotation des données via le menu latéral")
 

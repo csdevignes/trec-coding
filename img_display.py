@@ -22,8 +22,9 @@ def roi_display(prefix="", excluded_indx=[]):
                     label_list.append(item)
             label_match = {'blank_labels': "Vides (zeros)",
                            'sheet_labels': "Numéros de la feuille",
-                              'annot_labels': "Annotations en mémoire",
-                              'correct_labels': "Corrections en mémoire"}
+                            'annot_labels': "Annotations en mémoire",
+                            'correct_labels': "Corrections en mémoire",
+                           'predicted_labels': "Prédictions du modèle"}
             st.radio("Charger les labels :", label_list,
                      format_func=lambda x: label_match[x],
                      key=f"{prefix}_labels_display")
@@ -51,9 +52,10 @@ def update_label(img_indice, loadto, prefix=""):
 def load_label_from(loadto, prefix=""):
     label_match = {'blank_labels': "Vides (zeros)",
                    'sheet_labels': "Numéros de la feuille",
-                   'annot_labels': "Annotations en mémoire"}
+                   'annot_labels': "Annotations en mémoire",
+                   'predicted_labels': "Prédictions du modèle"}
     with st.form(f"{prefix}_labelchoice"):
-        st.selectbox("Charger les labels :", ['blank_labels', 'sheet_labels', 'annot_labels'],
+        st.selectbox("Charger les labels :", ['blank_labels', 'sheet_labels', 'annot_labels', 'predicted_labels'],
                      format_func=lambda x: label_match[x], index=1, key=f"{prefix}_labels_toload")
         an_submitted_sl = st.form_submit_button("Submit")
         if an_submitted_sl:
@@ -68,8 +70,6 @@ def annotate(prefix="", annotation=False):
     :param row_size:
     :param excluded_indx:
     '''
-    st.header("Paramètres")
-    st.checkbox("Exclure les cases exemple", key=f'{prefix}_exclude-exemple', value=True)
 
     if annotation==True:
         loadto = 'annot_labels'
@@ -92,11 +92,6 @@ def annotate(prefix="", annotation=False):
         loadto = 'correct_labels'
         load_label_from(loadto, prefix)
 
-    if st.session_state[f'{prefix}_exclude-exemple'] == True:
-        excluded_index = range(9)
-    else:
-        excluded_index = []
-    st.session_state[f'{prefix}_keeper_indx'] = [i for i in range(0, 200) if i not in excluded_index]
     image_list_filtered = st.session_state['ex_roi_symbols'][st.session_state[f'{prefix}_keeper_indx']]
     label_list_filtered = st.session_state[loadto][st.session_state[f'{prefix}_keeper_indx']]
     st.header("Symboles")

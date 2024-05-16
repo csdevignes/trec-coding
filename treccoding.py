@@ -45,8 +45,7 @@ if uploaded_file is not None:
     def box_extraction_process():
         b.extract_boxes_fast()
         st.write(f"Boites extraites avec la rotation {st.session_state['ex_rotation-degree']} : dimensions {b.box_coord.shape}")
-        with st.expander("Voir/Cacher les boites détectées"):
-            st.image(b.plot_boxes(b.box_coord))
+        st.image(b.plot_boxes(b.box_coord))
         st.session_state['ex_box_coord'] = b.box_coord
     if st.button("Détecter les boites"):
         box_extraction_process()
@@ -58,8 +57,7 @@ if uploaded_file is not None:
             r.extract_roi_symbols(st.session_state['ex_box_coord'])
             st.write(f'Symboles extraits : dimension {r.roi_symbols.shape}')
             st.session_state['ex_roi_symbols'] = r.roi_symbols
-            st.session_state['sheet_labels'] = r.sheet_labels
-            st.session_state['blank_labels'] = r.blank_labels
+            st.session_state['ex_scan_img'] = b.img_rot
         if st.button("Extraire les symboles"):
             store_roi_symbols()
 

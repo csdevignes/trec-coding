@@ -22,27 +22,21 @@ class Evaluator:
         self.y_predicted = model.predict(self.X)
         self.labels["predicted_labels"] = np.array([int(np.argmax(i) + 1) if max(i) > 0.7 else 0 for i in self.y_predicted])
         st.session_state["predicted_labels"] = self.labels["predicted_labels"]
-    def plot_results(self, image, labels, boxes):
-        image_copy = image.copy()
-        for i, gbox in enumerate(boxes):
-            x, y, w, h = gbox
-            if (labels[i] == 0):
-                cv.rectangle(image_copy, (x, y), (x + w, y + h), (255, 0, 0), 3)
-            elif (labels[i] == self.labels["sheet_labels"][i]):
-                cv.rectangle(image_copy, (x, y), (x + w, y + h), (0, 255, 0), 3)
-            else:
-                cv.rectangle(image_copy, (x, y), (x + w, y + h), (0, 0, 255), 3)
-        return image_copy
+
     def update_labels(self):
         for item in st.session_state.keys():
             if item.endswith('labels'):
                 self.labels[item] = st.session_state[item]
     def truncate(self, n):
-        return int(n * 100) / 100
+        if not np.isnan(n):
+            return int(n * 100) / 100
+        else:
+            return n
     def correction(self, correct_labels, test_labels):
         self.erreurs = [i for i, l in enumerate(correct_labels) if l != test_labels[i]]
         self.nb_erreurs = len(self.erreurs)
         self.cm = confusion_matrix(correct_labels, test_labels)
+    def metrics_calculation(self):
         self.recall = [self.truncate(self.cm[i, i] / self.cm[i, :].sum()) for i in range(0,10)]
         self.accuracy = [self.truncate(self.cm[i, i]/self.cm[:, i].sum()) for i in range(0,10)]
         FP_error = np.array([self.cm[0, i] for i in range(1, 10)])

@@ -20,18 +20,25 @@ if 'ex_roi_symbols' not in st.session_state:
     st.write("Veuillez d'abord extraire les symboles")
 
 else:
-    if 'correct_labels' not in st.session_state:
-        st.session_state['correct_labels'] = st.session_state['sheet_labels'].copy()
-    if 'predicted_labels' not in st.session_state:
-        st.session_state['predicted_labels'] = st.session_state['blank_labels'].copy()
+    tcutil.set_labels()
     if st.button("Lancer la prédiction des labels"):
         t = train.Trainer(st.session_state['ex_roi_symbols'])
         e = evaluate.Evaluator(t.pict_redim)
         e.predict()
         e.correction(correct_labels= st.session_state['sheet_labels'][st.session_state['co_keeper_indx']],
                      test_labels=st.session_state['predicted_labels'][st.session_state['co_keeper_indx']])
-        st.write(f'Erreurs indices : {e.erreurs}')
         st.write(f"Nombre d'erreurs : {e.nb_erreurs}")
+        st.pyplot(e.cm_plot())
+    with st.expander('Voir la grille corrigée'):
+        label_match = {'correct_labels': "Corrections",
+                       'predicted_labels': "Prédictions du modèle"}
+        st.radio("Labels tests :", ['predicted_labels', 'correct_labels'],
+                 format_func=lambda x: label_match[x], index=0,
+                 key=f"co_scan_label")
+        res_scan = img_display.plot_results_scan(st.session_state['ex_scan_img'],
+                                      st.session_state[st.session_state['co_scan_label']],
+                                      st.session_state['ex_box_coord'])
+        st.image(res_scan)
     st.header("Paramètres")
     tcutil.exclude_example("co")
     img_display.annotate(prefix="co", annotation=False)

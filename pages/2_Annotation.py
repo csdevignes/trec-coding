@@ -18,12 +18,12 @@ if 'ex_roi_symbols' not in st.session_state:
     st.write("Veuillez d'abord extraire les symboles")
 
 else:
-    if 'annot_labels' not in st.session_state:
-        st.session_state['annot_labels'] = st.session_state['sheet_labels'].copy()
+    tcutil.set_labels()
+    tcutil.exclude_example('an')
     img_display.annotate(prefix="an", annotation=True)
 
 # Saving dataset
-if 'annot_labels' in st.session_state:
+if 'ex_roi_symbols' in st.session_state and 'annot_labels' in st.session_state:
     d = train.Dataset(st.session_state['ex_roi_symbols'][st.session_state['an_keeper_indx']],
                       st.session_state['annot_labels'][st.session_state['an_keeper_indx']])
     st.write(d.dataset.shape)

@@ -22,6 +22,12 @@ def set_labels():
                                   3, 5, 2, 4, 9, 1, 7, 8, 6, 4, 3, 1, 8, 7, 2, 4, 3, 6, 5, 9,
                                   7, 1, 9, 3, 6, 8, 4, 2, 5, 6, 7, 9, 2, 6, 3, 8, 1, 4, 7, 5,
                                   8, 4, 3, 7, 2, 5, 6, 9, 1, 3, 4, 7, 5, 2, 4, 9, 8, 1, 3, 6])
+    if 'annot_labels' not in st.session_state:
+        st.session_state['annot_labels'] = st.session_state['sheet_labels'].copy()
+    if 'correct_labels' not in st.session_state:
+        st.session_state['correct_labels'] = st.session_state['sheet_labels'].copy()
+    if 'predicted_labels' not in st.session_state:
+        st.session_state['predicted_labels'] = st.session_state['blank_labels'].copy()
 def sidebar_progress():
     if 'uploaded_file_name' in st.session_state:
         st.sidebar.success(f"Fichier analysé : {repr(st.session_state['uploaded_file_name'])}")

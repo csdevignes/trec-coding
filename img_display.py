@@ -3,8 +3,9 @@ Contains functions for image display on streamlit web app
 '''
 import streamlit as st
 import numpy as np
+import cv2 as cv
 
-def roi_display(prefix="", excluded_indx=[]):
+def roi_display(prefix="", keeper_indx=range(0, 200)):
     '''
     Display function used to show all symbols images ordered by labels
     :param image_list: array of X images (X, height, width)
@@ -13,40 +14,38 @@ def roi_display(prefix="", excluded_indx=[]):
     :param excluded_indx:
     :return:
     '''
-    with st.expander("Voir/Cacher les symboles extraits"):
-        controls = st.columns(2)
-        with controls[0]:
-            label_list = []
-            for item in st.session_state.keys():
-                if item.endswith('labels'):
-                    label_list.append(item)
-            label_match = {'blank_labels': "Vides (zeros)",
-                           'sheet_labels': "Numéros de la feuille",
-                            'annot_labels': "Annotations en mémoire",
-                            'correct_labels': "Corrections en mémoire",
-                           'predicted_labels': "Prédictions du modèle"}
-            st.radio("Charger les labels :", label_list,
-                     format_func=lambda x: label_match[x],
-                     key=f"{prefix}_labels_display")
-        with controls[1]:
-            size_match = {20: "Petit", 12: "Moyen", 6: "Grand"}
-            st.select_slider("Taille:", [20, 12, 6], format_func=lambda x: size_match[x],
-                                        value=12, key=f'{prefix}_row-size')
+    controls = st.columns(2)
+    with controls[0]:
+        label_list = []
+        for item in st.session_state.keys():
+            if item.endswith('labels') and item != 'dataset_labels':
+                label_list.append(item)
+        label_match = {'blank_labels': "Vides (zeros)",
+                       'sheet_labels': "Numéros de la feuille",
+                        'annot_labels': "Annotations en mémoire",
+                        'correct_labels': "Corrections en mémoire",
+                       'predicted_labels': "Prédictions du modèle"}
+        st.radio("Charger les labels :", label_list,
+                 format_func=lambda x: label_match[x],
+                 key=f"{prefix}_labels_display")
+    with controls[1]:
+        size_match = {20: "Petit", 12: "Moyen", 6: "Grand"}
+        st.select_slider("Taille:", [20, 12, 6], format_func=lambda x: size_match[x],
+                                    value=12, key=f'{prefix}_row-size')
 
-        keeper_indx = [i for i in range(0, 200) if i not in excluded_indx]
-        image_list_filtered = st.session_state['ex_roi_symbols'][keeper_indx]
-        label_list_filtered = st.session_state[st.session_state[f'{prefix}_labels_display']][keeper_indx]
+    image_list_filtered = st.session_state['ex_roi_symbols'][keeper_indx]
+    label_list_filtered = st.session_state[st.session_state[f'{prefix}_labels_display']][keeper_indx]
 
-        for l in np.unique(label_list_filtered):
-            st.header(f'Label {l}')
-            label_mask = (label_list_filtered == l)
-            img_indices = np.where(label_mask)[0]
-            grid = st.columns(st.session_state[f'{prefix}_row-size'])
-            col = 0
-            for i, pixels in enumerate(image_list_filtered[img_indices]):
-                with grid[col]:
-                    st.image(pixels, img_indices[i])
-                    col = (col + 1) % st.session_state[f'{prefix}_row-size']
+    for l in np.unique(label_list_filtered):
+        st.header(f'Label {l}')
+        label_mask = (label_list_filtered == l)
+        img_indices = np.where(label_mask)[0]
+        grid = st.columns(st.session_state[f'{prefix}_row-size'])
+        col = 0
+        for i, pixels in enumerate(image_list_filtered[img_indices]):
+            with grid[col]:
+                st.image(pixels, img_indices[i])
+                col = (col + 1) % st.session_state[f'{prefix}_row-size']
 def update_label(img_indice, loadto, prefix=""):
     st.session_state[loadto][img_indice+9] = st.session_state[f'{prefix}_symbol{img_indice}']
 def load_label_from(loadto, prefix=""):
@@ -64,11 +63,8 @@ def load_label_from(loadto, prefix=""):
 
 def annotate(prefix="", annotation=False):
     '''
-    Display function used to show all symbols images ordered by labels
-    :param image_list: array of X images (X, height, width)
-    :param label_list: array of X labels (X,)
-    :param row_size:
-    :param excluded_indx:
+    Annotation function used to display images ordered by labels
+    and to give the ability to modify their annotation.
     '''
 
     if annotation==True:
@@ -116,57 +112,17 @@ def annotate(prefix="", annotation=False):
                                     label_visibility="collapsed")
                 col = (col + 1) % row_size
 
-class Annotation:
-    def __init__(self, picts, labels):
-        self.pict = picts
-        self.true_labels = labels
-        self.manual_labels = self.true_labels
-    def update_labels(self):
-        if 'manual_labels' not in st.session_state:
-            st.session_state.manual_labels = self.true_labels
+def plot_results_scan(image, labels, boxes):
+    image_copy = image.copy()
+    intervals = [(20, 40), (60, 80), (100, 120), (140, 160), (180, 200), (220, 240), (260, 280), (300, 320),
+                 (340, 360), (380, 400)]
+    symbols_index = np.concatenate([np.arange(start, end, 1) for start, end in intervals])
+    for i, gbox in enumerate(boxes[symbols_index]):
+        x, y, w, h = gbox
+        if (labels[i] == 0):
+            cv.rectangle(image_copy, (x, y), (x + w, y + h), (255, 0, 0), 3)
+        elif (labels[i] == st.session_state["sheet_labels"][i]):
+            cv.rectangle(image_copy, (x, y), (x + w, y + h), (0, 255, 0), 3)
         else:
-            self.manual_labels = st.session_state.manual_labels
-    def controllers(self):
-        controls = st.columns(3)
-        with controls[0]:
-            label = st.radio("Tri par label :", ["Vide", "Numéros", "Annotations"], key='label-sorting2')
-            if label == "Vide":
-                labels_fig = st.session_state['blank_labels']
-            elif label == "Numéros":
-                labels_fig = st.session_state['sheet_labels']
-            elif label == "Annotations":
-                labels_fig = st.session_state['annot_labels']
-        with controls[1]:
-            size_match = {20: "Petit", 12: "Moyen", 6: "Grand"}
-            self.row_size = st.select_slider("Taille:", [20, 12, 6], format_func=lambda x: size_match[x], value=12,
-                                        key='row-size-annot-m')
-        with controls[2]:
-            exclude_exemple = st.checkbox("Exclure les cases exemple", key='exclude-exemple')
-            if exclude_exemple:
-                excluded_index = range(9)
-    def update(self, img_index):
-        self.manual_labels[img_index] = st.session_state[f'symbol{img_index}']
-        if st.session_state.manual_labels[img_index] != self.manual_labels[img_index]:
-            st.session_state.manual_labels[img_index] = self.manual_labels[img_index]
-    def annotation_display(self):
-        keeper_indx = [i for i in range(0, 200) if i not in excluded_indx]
-        image_list_filtered = self.pict[keeper_indx]
-        label_list_filtered = self.true_labels[keeper_indx]
-
-        for l in np.unique(label_list_filtered):
-            st.header(f'Label {l}')
-            label_mask = (label_list_filtered == l)
-            img_indices = np.where(label_mask)[0]
-            grid = st.columns(self.row_size)
-            col = 0
-            for i, pixels in enumerate(image_list_filtered[img_indices]):
-                with grid[col]:
-                    st.image(pixels, img_indices[i])
-                    st.number_input(f"Symbol{img_indices[i]}", min_value=0, max_value=9,
-                                    value=self.manual_labels[img_indices[i]],
-                                    key=f"symbol{img_indices[i]}",
-                                    help="Enter label between 1 and 9 or 0 for errors",
-                                    on_change= self.update, args=[img_indices[i]],
-                                    label_visibility="collapsed")
-                    col = (col + 1) % self.row_size
-
+            cv.rectangle(image_copy, (x, y), (x + w, y + h), (0, 0, 255), 3)
+    return image_copy

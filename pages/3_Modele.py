@@ -38,6 +38,7 @@ if t is not None:
     e.predict()
     e.correction(st.session_state['dataset_labels'],
                  st.session_state['predicted_labels'])
+    e.metrics_calculation()
     st.write(f"Nombre d'erreurs : {e.nb_erreurs}")
     st.pyplot(e.cm_plot())
     st.table(e.metrics_df())

@@ -48,13 +48,15 @@ class Trainer:
                     self.full_da = np.append(self.full_da, da, axis=0)
             else:
                 continue
-    def split_labels(self):
+    def split_labels(self, ext_w=76, ext_h=82):
         '''
         Used when loading a saved dataset (pict + label)
         '''
-        self.pict, self.label = np.split(self.full_da, [6232], axis = 1)
+        keeper_i = np.where(self.full_da[:, -1] != 0)[0]
+        self.full_da = self.full_da[keeper_i, :]
+        self.pict, self.label = np.split(self.full_da, [ext_w*ext_h], axis = 1)
         self.label = self.label.reshape((len(self.label),)).astype(np.int32)
-        self.pict = self.pict.reshape((len(self.pict), 76, 82))
+        self.pict = self.pict.reshape((len(self.pict), ext_w, ext_h))
     def redimension_pict(self, size=(28, 28)):
         self.size = size
         self.pict = self.pict.astype(np.float32)

@@ -2,6 +2,7 @@
 TREC correction app - page Correction
 This page aims to correct scanned resultsheet and analyse results
 '''
+import os
 
 import numpy as np
 import streamlit as st
@@ -21,24 +22,27 @@ if 'ex_roi_symbols' not in st.session_state:
 
 else:
     tcutil.set_labels()
+    entrees = os.listdir("models/")
+    model_list = [entree for entree in entrees if entree.endswith(".keras")]
+    st.selectbox("Modèle à utiliser", model_list, key="model_path")
     if st.button("Lancer la prédiction des labels"):
         t = train.Trainer(st.session_state['ex_roi_symbols'])
         e = evaluate.Evaluator(t.pict_redim)
-        e.predict()
+        st.session_state['predicted_labels'] = e.predict(f'models/{st.session_state["model_path"]}')
         e.correction(correct_labels= st.session_state['sheet_labels'][st.session_state['co_keeper_indx']],
                      test_labels=st.session_state['predicted_labels'][st.session_state['co_keeper_indx']])
         st.write(f"Nombre d'erreurs : {e.nb_erreurs}")
         st.pyplot(e.cm_plot())
-    with st.expander('Voir la grille corrigée'):
-        label_match = {'correct_labels': "Corrections",
-                       'predicted_labels': "Prédictions du modèle"}
-        st.radio("Labels tests :", ['predicted_labels', 'correct_labels'],
-                 format_func=lambda x: label_match[x], index=0,
-                 key=f"co_scan_label")
-        res_scan = img_display.plot_results_scan(st.session_state['ex_scan_img'],
-                                      st.session_state[st.session_state['co_scan_label']],
-                                      st.session_state['ex_box_coord'])
-        st.image(res_scan)
+        with st.expander('Voir la grille corrigée'):
+            label_match = {'correct_labels': "Corrections",
+                           'predicted_labels': "Prédictions du modèle"}
+            st.radio("Labels tests :", ['predicted_labels', 'correct_labels'],
+                     format_func=lambda x: label_match[x], index=0,
+                     key=f"co_scan_label")
+            res_scan = img_display.plot_results_scan(st.session_state['ex_scan_img'],
+                                          st.session_state[st.session_state['co_scan_label']],
+                                          st.session_state['ex_box_coord'])
+            st.image(res_scan)
     st.header("Paramètres")
     tcutil.exclude_example("co")
     img_display.annotate(prefix="co", annotation=False)

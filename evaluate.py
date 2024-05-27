@@ -24,7 +24,7 @@ class Evaluator:
         model = keras.models.load_model(modelpath)
         self.y_predicted = model.predict(self.X)
         self.labels["predicted_labels"] = np.array([int(np.argmax(i) + 1) if max(i) > 0.7 else 0 for i in self.y_predicted])
-        st.session_state["predicted_labels"] = self.labels["predicted_labels"]
+        return self.labels["predicted_labels"]
 
     def update_labels(self):
         for item in st.session_state.keys():

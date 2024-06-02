@@ -65,4 +65,3 @@ if 'ex_roi_symbols' in st.session_state:
         img_display.roi_display(prefix="ex")
         st.write("Continuer avec la correction ou l'annotation des données via le menu latéral")
 
-st.write(st.session_state)

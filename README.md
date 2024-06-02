@@ -15,6 +15,11 @@ Link to app on streamlit community cloud [here](https://trec-coding.streamlit.ap
 * * We can obtain this total number of filled boxes by using the mean pixel intensity : to optimize
 * Add the possibility to take a picture of the scanned result sheet
 * * Need improvement of box detection even with variation in sheet dimension : try SAM or keras CV module
+* Model page : problems with number of error
+* Model : separate labels from the rest
+* Correction page : problems with predicted labels
+* Correction : problem with error numbers
+
 
 ### Deep learning aspects
 

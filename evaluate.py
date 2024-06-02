@@ -30,11 +30,6 @@ class Evaluator:
         for item in st.session_state.keys():
             if item.endswith('labels'):
                 self.labels[item] = st.session_state[item]
-    # def truncate(self, n):
-    #     if n != 0 and not np.isnan(n):
-    #         return int(n * 100) / 100
-    #     else:
-    #         return n
     def correction(self, correct_labels, test_labels):
         self.erreurs = [i for i, l in enumerate(correct_labels) if l != test_labels[i]]
         self.nb_erreurs = len(self.erreurs)
@@ -45,10 +40,10 @@ class Evaluator:
     def metrics_calculation(self):
         self.recall = [self.cm[i, i] / self.cm[i, :].sum() for i in range(0,10)]
         print('metrics calculation')
-        self.accuracy = [self.cm[i, i]/self.cm[:, i].sum() for i in range(0,10)]
+        self.precision = [self.cm[i, i]/self.cm[:, i].sum() for i in range(0,10)]
         FP_error = np.array([self.cm[0, i] for i in range(1, 10)])
         FN_error = np.array([self.cm[i, 0] for i in range(1, 10)])
-        # /!\ delete uses the index in the np.arange(1,10) not from the self.cm, which is where the i-1 comes from
+        # delete uses the index in the np.arange(1,10) not from the self.cm, which is where the i-1 comes from
         FP_symbol = np.array([self.cm[np.delete(np.arange(1, 10), i - 1), i].sum() for i in range(1, 10)])
         FN_symbol = np.array([self.cm[i, np.delete(np.arange(1, 10), i - 1)].sum() for i in range(1, 10)])
         FP_total = FP_error + FP_symbol
@@ -62,7 +57,7 @@ class Evaluator:
         plt.ylabel('True')
         return plt
     def metrics_df(self):
-        df = pd.DataFrame({'Accuracy': self.accuracy, 'Recall': self.recall},
+        df = pd.DataFrame({'Precision': self.precision, 'Recall': self.recall},
                           index=range(0, 10))
         return df.transpose()
     def metrics_plot(self):

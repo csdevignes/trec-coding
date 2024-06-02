@@ -34,6 +34,7 @@ class Trainer:
             self.load_dataset(datapath)
             self.split_labels()
         self.redimension_pict()
+        self.remove_zero()
     def load_dataset(self, datapath):
         '''
         Used when loading a saved dataset (pict + label)
@@ -52,15 +53,18 @@ class Trainer:
         '''
         Used when loading a saved dataset (pict + label)
         '''
-        keeper_i = np.where(self.full_da[:, -1] != 0)[0]
-        self.full_da = self.full_da[keeper_i, :]
         self.pict, self.label = np.split(self.full_da, [ext_w*ext_h], axis = 1)
         self.label = self.label.reshape((len(self.label),)).astype(np.int32)
         self.pict = self.pict.reshape((len(self.pict), ext_w, ext_h))
+    def remove_zero(self):
+        keeper_i = np.where(self.full_da[:, -1] != 0)[0]
+        self.label_zeros = self.label
+        self.pict_zeros = self.pict_redim
+        self.label = self.label[keeper_i]
+        self.pict_redim = self.pict_redim[keeper_i, :, :]
     def redimension_pict(self, size=(28, 28)):
         self.size = size
         self.pict = self.pict.astype(np.float32)
-        self.pict = self.pict.reshape(-1, self.pict.shape[1], self.pict.shape[2], 1)
         self.pict_redim = np.empty((len(self.pict), self.size[0], self.size[1]))
         for i in range(len(self.pict)):
             img_resized = cv.resize(self.pict[i], self.size, interpolation=cv.INTER_AREA)
@@ -106,5 +110,11 @@ class Trainer:
         plt.show()
 
 if __name__ == "__main__":
-    t = Trainer(None, "data_resultsheets/Test/")
-    t.visualize_random_samples(t.label)
+    t = Trainer(datapath="data_resultsheets/Test/")
+    print(t.pict.shape)
+    print(t.pict_redim.shape)
+    print(t.pict_zeros.shape)
+    print(t.label.shape)
+    print(t.label_zeros.shape)
+    print(t.pict_redim.min() + t.pict_redim.max())
+    print(t.pict_zeros.min() + t.pict_zeros.max())

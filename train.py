@@ -51,18 +51,17 @@ class Trainer:
                 continue
     def split_labels(self, ext_w=76, ext_h=82):
         '''
-        Used when loading a saved dataset (pict + label)
+        Used when loading a saved dataset (pict + label). Split pict and label from full dataset,
+        reshape both arrays according to width and height of pictures.
         '''
         self.pict, self.label = np.split(self.full_da, [ext_w*ext_h], axis = 1)
         self.label = self.label.reshape((len(self.label),)).astype(np.int32)
         self.pict = self.pict.reshape((len(self.pict), ext_w, ext_h))
-    def remove_zero(self):
-        keeper_i = np.where(self.full_da[:, -1] != 0)[0]
-        self.label_zeros = self.label
-        self.pict_zeros = self.pict_redim
-        self.label = self.label[keeper_i]
-        self.pict_redim = self.pict_redim[keeper_i, :, :]
     def redimension_pict(self, size=(28, 28)):
+        '''
+        Redimension pict into appropriate size for the neural network.
+        Performs min/max normalization.
+        '''
         self.size = size
         self.pict = self.pict.astype(np.float32)
         self.pict_redim = np.empty((len(self.pict), self.size[0], self.size[1]))
@@ -70,7 +69,21 @@ class Trainer:
             img_resized = cv.resize(self.pict[i], self.size, interpolation=cv.INTER_AREA)
             self.pict_redim[i] = img_resized
         self.pict_redim = self.pict_redim / 255
+    def remove_zero(self):
+        '''
+        When dataset has no zeros class (errors) in it : this will not change anything
+        When dataset has zeros class: this will create label and pict_redim without the zeros,
+        and label_zeros and pict_zeros with the zeros.
+        '''
+        keeper_i = np.where(self.full_da[:, -1] != 0)[0]
+        self.label_zeros = self.label
+        self.pict_zeros = self.pict_redim
+        self.label = self.label[keeper_i]
+        self.pict_redim = self.pict_redim[keeper_i, :, :]
     def plot_mpi(self):
+        '''
+        plot mean pixel intensity using full dataset (not redimensionned)
+        '''
         mean_pix = self.full_da[:, :-1].mean(axis=1)
         labels = self.full_da[:, -1]
         jitter = np.random.normal(0, 0.1, size=len(labels))
@@ -80,6 +93,10 @@ class Trainer:
         plt.show()
 
     def visualize_symbols(self, labels, imgperrow=12):
+        '''
+        Visualize all symbols from pict_redim (can take time with big datasets)
+        Symbols are sorted per label.
+        '''
         for l in np.unique(labels):
             label_mask = (labels == l)
             img_indices = np.where(label_mask)[0]
@@ -99,6 +116,9 @@ class Trainer:
             plt.show()
 
     def visualize_random_samples(self, y = None, num_samples=5):
+        '''
+        Visualize random symbols from pict_redim
+        '''
         sample_indices = np.random.choice(len(self.pict_redim), num_samples, replace=False)
         fig, axes = plt.subplots(1, num_samples, figsize=(12, 3))
         for i, idx in enumerate(sample_indices):
@@ -111,10 +131,3 @@ class Trainer:
 
 if __name__ == "__main__":
     t = Trainer(datapath="data_resultsheets/Test/")
-    print(t.pict.shape)
-    print(t.pict_redim.shape)
-    print(t.pict_zeros.shape)
-    print(t.label.shape)
-    print(t.label_zeros.shape)
-    print(t.pict_redim.min() + t.pict_redim.max())
-    print(t.pict_zeros.min() + t.pict_zeros.max())

@@ -16,10 +16,8 @@ Link to app on streamlit community cloud [here](https://trec-coding.streamlit.ap
 * * maybe max/min intensity, or number of pixel below/above a certain threshold.
 * Add the possibility to take a picture of the scanned result sheet
 * * Need improvement of box detection even with variation in sheet dimension : try SAM or keras CV module
-* Model page : problems with number of error
-* Model : separate labels from the rest
-* Correction page : problems with predicted labels
-* Correction : problem with error numbers
+* Problem with number of errors, predictes labels in Model/correction pages:
+* * Try distinct label names in session state
 
 
 ### Deep learning aspects
@@ -30,3 +28,4 @@ Link to app on streamlit community cloud [here](https://trec-coding.streamlit.ap
 * Implement custom metrics and loss in training fit
 * Models
 * * CNN optimization : add conv layers, add padding, modify dropout, modify CNN layer architecture (2x64)
+* Image augmentation

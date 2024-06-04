@@ -12,6 +12,9 @@ from matplotlib import pyplot as plt
 
 
 class Dataset:
+    '''
+    Put together the dataset and saves it in a csv file.
+    '''
     def __init__(self, img, label):
         self.pict = img
         self.label = label
@@ -24,7 +27,16 @@ class Dataset:
         return self.df.to_csv(index=False, header=False).encode('utf-8')
 
 class Trainer:
-    def __init__(self, pict=None, data = None, datapath = None):
+    '''
+    Load dataset and prepare it for use by the neural network.
+    '''
+    def __init__(self, pict=None, data = None, datapath = None, removezeros = False):
+        '''
+        Several data source can be used :
+        - pict : array of pictures (labels provided separately)
+        - data : array of pictures + labels (as the last column)
+        - datapath : string, path to folder containing data arrays (of picture + labels)
+        '''
         if pict is not None:
             self.pict = pict
         elif data is not None:
@@ -34,10 +46,11 @@ class Trainer:
             self.load_dataset(datapath)
             self.split_labels()
         self.redimension_pict()
-        self.remove_zero()
+        if removezeros:
+            self.remove_zero()
     def load_dataset(self, datapath):
         '''
-        Used when loading a saved dataset (pict + label)
+        Used when loading datasets from a datapath (pict + label)
         '''
         self.full_da = None
         for filename in os.listdir(datapath):
@@ -115,14 +128,14 @@ class Trainer:
             fig.subplots_adjust(top=0.75)
             plt.show()
 
-    def visualize_random_samples(self, y = None, num_samples=5):
+    def visualize_random_samples(self, pict, y = None, num_samples=5):
         '''
         Visualize random symbols from pict_redim
         '''
-        sample_indices = np.random.choice(len(self.pict_redim), num_samples, replace=False)
+        sample_indices = np.random.choice(len(pict), num_samples, replace=False)
         fig, axes = plt.subplots(1, num_samples, figsize=(12, 3))
         for i, idx in enumerate(sample_indices):
-            axes[i].imshow(self.pict_redim[idx], cmap='gray')
+            axes[i].imshow(pict[idx], cmap='gray')
             if y is not None:
                 axes[i].set_title(f"Label: {y[idx]}")
             axes[i].axis('off')

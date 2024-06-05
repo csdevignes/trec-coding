@@ -26,6 +26,11 @@ Link to app on streamlit community cloud [here](https://trec-coding.streamlit.ap
 * * Done for training, still ongoing for annotation and correction (usefulness?)
 * Confusion matrix aesthetics: normalisation on true or pred, possibility to hide diagonal
 * Implement custom metrics and loss in training fit
-* Models
-* * CNN optimization : add conv layers, add padding, modify dropout, modify CNN layer architecture (2x64)
+* CNN optimization : improvements:
+  * add conv layers (2x64)
+  * add padding
+  * modify DNN layer architecture 
+  * add batch normalisation
+  * l1/l2 regularization 
+  * modify dropout
 * Image augmentation

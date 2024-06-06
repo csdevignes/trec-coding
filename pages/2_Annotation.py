@@ -24,8 +24,8 @@ else:
 
 # Saving dataset
 if 'ex_roi_symbols' in st.session_state and 'annot_labels' in st.session_state:
-    d = train.Dataset(st.session_state['ex_roi_symbols'][st.session_state['an_keeper_indx']],
-                      st.session_state['annot_labels'][st.session_state['an_keeper_indx']])
+    d = train.Dataset(st.session_state['ex_roi_symbols'][st.session_state[f'an_mask']],
+                      st.session_state['annot_labels'][st.session_state[f'an_mask']])
     st.write(d.dataset.shape)
     file_name = st.session_state["uploaded_file_name"].split('.')[0]
     st.download_button(

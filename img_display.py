@@ -89,9 +89,8 @@ def annotate(prefix="", annotation=False):
         st.session_state[f'{prefix}_label-type'] = "Correction"
         loadto = 'correct_labels'
         load_label_from(loadto, prefix)
-
-    image_list_filtered = st.session_state['ex_roi_symbols'][st.session_state[f'{prefix}_keeper_indx']]
-    label_list_filtered = st.session_state[loadto][st.session_state[f'{prefix}_keeper_indx']]
+    image_list_filtered = st.session_state['ex_roi_symbols'][st.session_state[f'{prefix}_mask']]
+    label_list_filtered = st.session_state[loadto][st.session_state[f'{prefix}_mask']]
     st.header("Symboles")
     size_match = {20: "Petit", 12: "Moyen", 6: "Grand"}
     row_size = st.select_slider("Taille:", [20, 12, 6], format_func=lambda x: size_match[x], value=12,
@@ -158,3 +157,4 @@ def roi_display_jup(symbols, labels, keeper_indx=range(0, 200), row_size = 12):
         fig.suptitle(f'Label {l}', fontsize=16)
         fig.subplots_adjust(top=0.75)
         plt.show()
+    return fig

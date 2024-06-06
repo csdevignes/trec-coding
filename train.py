@@ -96,6 +96,7 @@ class Trainer:
         self.pict_zeros = self.pict_redim
         self.label = self.label[keeper_i]
         self.pict_redim = self.pict_redim[keeper_i, :, :]
+
     def plot_mpi(self):
         '''
         plot mean pixel intensity using full dataset (not redimensionned)

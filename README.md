@@ -17,7 +17,7 @@ Link to app on streamlit community cloud [here](https://trec-coding.streamlit.ap
   * Need improvement of box detection even with variation in sheet dimension : try SAM or keras CV module
 * Problem with number of errors, predicted labels in Model/correction pages: cannot repeat so far.
 * Jupyter only : problem with roi_display_jup when not enough symbol to make 2 lines
-
+* Adapt visualisation functions so that they can be used also in model
 
 ### Deep learning aspects
 

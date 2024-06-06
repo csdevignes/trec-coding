@@ -65,14 +65,25 @@ def sidebar_legend():
             st.markdown(
                 f"<p style='position:relative; top:-20px; color:red; font-size:1.5em;padding:10px;margin:0;text-align:center;'>{leg_label[i]}</p>",
                 unsafe_allow_html=True)
-
+def detect_empty(picts):
+    fill_mask = picts.reshape((len(picts), picts.shape[1]*picts.shape[2])).std(axis=1) > 10
+    return fill_mask
 def exclude_example(prefix):
     st.checkbox("Exclure les cases exemple", key=f'{prefix}_exclude-exemple', value=True)
     if st.session_state[f'{prefix}_exclude-exemple'] == True:
         excluded_index = range(9)
     else:
         excluded_index = []
+    st.session_state[f'{prefix}_keeper_mask'] = [False if i in excluded_index else True for i in (range(200))]
     st.session_state[f'{prefix}_keeper_indx'] = [i for i in range(0, 200) if i not in excluded_index]
+    st.checkbox("Exclure les cases vides", key=f'{prefix}_exclude_empty', value=True)
+    if st.session_state[f'{prefix}_exclude_empty'] == True:
+        st.session_state[f'{prefix}_fill_mask'] = detect_empty(st.session_state['ex_roi_symbols'])
+    else:
+        st.session_state[f'{prefix}_fill_mask'] = np.ones(200)
+    st.session_state[f'{prefix}_mask'] = [True if f and k else False for f, k in zip(st.session_state[f'{prefix}_keeper_mask'],
+                                                       st.session_state[f'{prefix}_fill_mask'])]
+
 
 if __name__ == "__main__":
     labs = Labels()

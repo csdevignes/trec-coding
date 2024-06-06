@@ -20,6 +20,9 @@ class Evaluator:
             self.update_labels()
         else:
             self.labels['train_labels'] = labels
+        self.detect_empty()
+    def detect_empty(self):
+        self.fill_mask = self.X.reshape((len(self.X), 28*28)).std(axis=1) > 0.02
     def predict(self, modelpath = "models/DNN_alldata_Epoch30_20240516.keras"):
         '''
         Predict y from X given in initialization, then infer labels from predictions by taking
@@ -39,16 +42,19 @@ class Evaluator:
         for item in st.session_state.keys():
             if item.endswith('labels'):
                 self.labels[item] = st.session_state[item].copy()
-    def correction(self, correct_labels, test_labels):
+    def correction(self, correct_labels, test_labels, keeper_mask):
         '''
         Calculate number of errors depending on given correct labels and test labels
         (from prediction or correction). Compute the confusion matrix and accuracy based on these labels.
         '''
-        self.erreurs = [i for i, l in enumerate(correct_labels) if l != test_labels[i]]
+        mask = [True if f and k else False for f,k in zip(self.fill_mask, keeper_mask)]
+        c_lab = correct_labels[mask]
+        t_lab = test_labels[mask]
+        self.erreurs = [i for i, l in enumerate(c_lab) if l != t_lab[i]]
         self.nb_erreurs = len(self.erreurs)
-        self.cm = confusion_matrix(correct_labels, test_labels)
+        self.cm = confusion_matrix(c_lab, t_lab)
         self.cm = np.array(self.cm)
-        self.g_accuracy = accuracy_score(correct_labels, test_labels)
+        self.g_accuracy = accuracy_score(c_lab, t_lab)
         self.g_error = 1-self.g_accuracy
     def metrics_calculation(self):
         '''

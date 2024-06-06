@@ -29,8 +29,9 @@ else:
         t = train.Trainer(st.session_state['ex_roi_symbols'])
         e = evaluate.Evaluator(t.pict_redim)
         st.session_state['predicted_labels'] = e.predict(f'models/{st.session_state["model_path"]}')
-        e.correction(correct_labels= st.session_state['sheet_labels'][st.session_state['co_keeper_indx']],
-                     test_labels=st.session_state['predicted_labels'][st.session_state['co_keeper_indx']])
+        e.correction(correct_labels= st.session_state['sheet_labels'],
+                     test_labels=st.session_state['predicted_labels'],
+                     keeper_mask=st.session_state['co_keeper_mask'])
         st.write(f"Nombre d'erreurs : {e.nb_erreurs}")
         st.pyplot(e.cm_plot())
         with st.expander('Voir la grille corrigée'):
@@ -50,8 +51,8 @@ else:
 
     if 'correct_labels' in st.session_state:
         st.header("Résultats :")
-        d = train.Dataset(st.session_state['ex_roi_symbols'][st.session_state['co_keeper_indx']],
-                          st.session_state['correct_labels'][st.session_state['co_keeper_indx']])
+        d = train.Dataset(st.session_state['ex_roi_symbols'][st.session_state[f'co_mask']],
+                          st.session_state['correct_labels'][st.session_state[f'co_mask']])
         st.write(d.dataset.shape)
         file_name = st.session_state["uploaded_file_name"].split('.')[0]
         st.download_button(

@@ -1,6 +1,8 @@
 '''
 Contains functions for image display on streamlit web app
 '''
+import math
+import matplotlib.pyplot as plt
 import streamlit as st
 import numpy as np
 import cv2 as cv
@@ -112,7 +114,7 @@ def annotate(prefix="", annotation=False):
                                     label_visibility="collapsed")
                 col = (col + 1) % row_size
 
-def plot_results_scan(image, labels, boxes):
+def plot_results_scan(image, labels, sheet_labels, boxes):
     image_copy = image.copy()
     intervals = [(20, 40), (60, 80), (100, 120), (140, 160), (180, 200), (220, 240), (260, 280), (300, 320),
                  (340, 360), (380, 400)]
@@ -121,8 +123,38 @@ def plot_results_scan(image, labels, boxes):
         x, y, w, h = gbox
         if (labels[i] == 0):
             cv.rectangle(image_copy, (x, y), (x + w, y + h), (255, 0, 0), 3)
-        elif (labels[i] == st.session_state["sheet_labels"][i]):
+        elif (labels[i] == sheet_labels[i]):
             cv.rectangle(image_copy, (x, y), (x + w, y + h), (0, 255, 0), 3)
         else:
             cv.rectangle(image_copy, (x, y), (x + w, y + h), (0, 0, 255), 3)
     return image_copy
+
+def roi_display_jup(symbols, labels, keeper_indx=range(0, 200), row_size = 12):
+    '''
+    Display function used to show all symbols images ordered by labels
+    :param image_list: array of X images (X, height, width)
+    :param label_list: array of X labels (X,)
+    :param row_size:
+    :param excluded_indx:
+    :return:
+    '''
+    image_list_filtered = symbols[keeper_indx]
+    label_list_filtered = labels[keeper_indx]
+
+    for l in np.unique(label_list_filtered):
+        label_mask = (label_list_filtered == l)
+        img_indices = np.where(label_mask)[0]
+
+        n_rows = math.ceil(len(image_list_filtered[img_indices]) / row_size)
+        fig, axs = plt.subplots(n_rows, row_size, figsize=(row_size, n_rows))
+
+        for i, pixels in enumerate(image_list_filtered[img_indices]):
+            row = i // row_size
+            col = i % row_size
+            ax = axs[row, col]
+            ax.imshow(pixels)
+            ax.text(0.5, 1.02, str(img_indices[i]), transform=ax.transAxes, ha='center', va='bottom', fontsize=10)
+            ax.axis('off')
+        fig.suptitle(f'Label {l}', fontsize=16)
+        fig.subplots_adjust(top=0.75)
+        plt.show()

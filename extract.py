@@ -15,7 +15,7 @@ class Boxdetection:
     on scanned image.
     '''
 
-    def __init__(self, image_file):
+    def __init__(self, image_file = None, image_path = None):
         '''
         When using with streamlit file uploader, use cv.imdecode line
         When using with local file, use cv.imread together with image path
@@ -23,8 +23,10 @@ class Boxdetection:
         :param image_path: directory path to image file
         :param image_file: image file loaded from another method
         '''
-        #self.img = cv.imread(image_path)
-        self.img = cv.imdecode(image_file, cv.IMREAD_COLOR)
+        if image_file is not None:
+            self.img = cv.imdecode(image_file, cv.IMREAD_COLOR)
+        elif image_path is not None:
+            self.img = cv.imread(image_path)
     @st.cache_data
     def plot_scan(_self, image, grid = [5, 4]):
         '''

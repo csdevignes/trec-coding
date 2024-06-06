@@ -25,6 +25,9 @@ class Dataset:
     def convert_csv(self):
         self.df = pd.DataFrame(self.dataset)
         return self.df.to_csv(index=False, header=False).encode('utf-8')
+    def save_csv(self, imagefile):
+        file_name = imagefile.split('.')[0]
+        np.savetxt(f'data_resultsheets/{file_name}.csv', self.dataset, fmt='%d', delimiter=',')
 
 class Trainer:
     '''

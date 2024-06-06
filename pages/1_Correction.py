@@ -41,6 +41,7 @@ else:
                      key=f"co_scan_label")
             res_scan = img_display.plot_results_scan(st.session_state['ex_scan_img'],
                                           st.session_state[st.session_state['co_scan_label']],
+                                          st.session_state["sheet_labels"],
                                           st.session_state['ex_box_coord'])
             st.image(res_scan)
     st.header("Paramètres")

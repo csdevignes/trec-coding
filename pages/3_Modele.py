@@ -3,19 +3,16 @@ TREC correction app - page Modèle
 This page aims to provide interface for training and evaluating the model
 '''
 import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-import evaluate
-import tcutil
-import streamlit as st
-from img_display import roi_display_jup
-import train
 import os
+import streamlit as st
+
+from img_display import roi_display_jup
+import train, evaluate, tcutil
+
 
 tcutil.sidebar_progress()
 tcutil.sidebar_legend()
 
-t = None
 def dataset_load(t):
     st.write(t.full_da.shape)
     st.session_state['dataset_picts'] = t.pict_redim
@@ -45,15 +42,15 @@ if 'dataset_picts' in st.session_state:
     model_list = [entree for entree in entrees if entree.endswith(".keras")]
     st.selectbox("Modèle à utiliser", model_list, key="model_path")
     st.session_state['predicted_labels'] = e.predict(f'models/{st.session_state["model_path"]}')
-    e.detect_empty()
     e.correction(st.session_state['dataset_labels'],
-                 st.session_state['predicted_labels'])
+                 st.session_state['predicted_labels'], e.fill_mask)
     e.metrics_calculation()
-    st.write(f"Cases remplies : {e.fill_mask.sum()}, Nombre d'erreurs : {e.nb_erreurs}")
+    st.write(e.result)
     st.pyplot(e.cm_plot())
     st.write(f'Accuracy : {e.g_accuracy}, Errors : {e.g_error}')
     st.table(e.metrics_df())
     st.pyplot(e.metrics_plot())
+    st.write(f'Total false positive : {e.TFP}, Total false negative : {e.TFN}')
     if st.button("Show symbols"):
         fig = roi_display_jup(e.X, e.fill_mask, range(len(e.X)), 20)
         st.pyplot(fig)

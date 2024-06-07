@@ -25,26 +25,33 @@ else:
     entrees = os.listdir("models/")
     model_list = [entree for entree in entrees if entree.endswith(".keras")]
     st.selectbox("Modèle à utiliser", model_list, key="model_path")
+    t = train.Trainer(st.session_state['ex_roi_symbols'])
+    e = evaluate.Evaluator(t.pict_redim)
     if st.button("Lancer la prédiction des labels"):
-        t = train.Trainer(st.session_state['ex_roi_symbols'])
-        e = evaluate.Evaluator(t.pict_redim)
         st.session_state['predicted_labels'] = e.predict(f'models/{st.session_state["model_path"]}')
         e.correction(correct_labels= st.session_state['sheet_labels'],
                      test_labels=st.session_state['predicted_labels'],
                      keeper_mask=st.session_state['co_keeper_mask'])
-        st.write(f"Nombre d'erreurs : {e.nb_erreurs}")
+        st.write(e.result)
         st.pyplot(e.cm_plot())
-        with st.expander('Voir la grille corrigée'):
-            label_match = {'correct_labels': "Corrections",
-                           'predicted_labels': "Prédictions du modèle"}
-            st.radio("Labels tests :", ['predicted_labels', 'correct_labels'],
-                     format_func=lambda x: label_match[x], index=0,
-                     key=f"co_scan_label")
-            res_scan = img_display.plot_results_scan(st.session_state['ex_scan_img'],
-                                          st.session_state[st.session_state['co_scan_label']],
-                                          st.session_state["sheet_labels"],
-                                          st.session_state['ex_box_coord'])
-            st.image(res_scan)
+    if st.button("Calculer les résultats avec la correction manuelle"):
+        e.correction(correct_labels= st.session_state['sheet_labels'],
+                     test_labels=st.session_state['correct_labels'],
+                     keeper_mask=st.session_state['co_keeper_mask'])
+        st.write(e.result)
+        st.pyplot(e.cm_plot())
+    with st.expander('Voir la grille corrigée'):
+        label_match = {'correct_labels': "Corrections",
+                       'predicted_labels': "Prédictions du modèle"}
+        st.radio("Labels tests :", ['predicted_labels', 'correct_labels'],
+                 format_func=lambda x: label_match[x], index=0,
+                 key=f"co_scan_label")
+        res_scan = img_display.plot_results_scan(st.session_state['ex_scan_img'],
+                                      st.session_state[st.session_state['co_scan_label']],
+                                      st.session_state["sheet_labels"],
+                                      st.session_state['ex_box_coord'])
+        st.image(res_scan)
+
     st.header("Paramètres")
     tcutil.exclude_example("co")
     img_display.annotate(prefix="co", annotation=False)

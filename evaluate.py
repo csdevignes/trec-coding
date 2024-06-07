@@ -56,6 +56,7 @@ class Evaluator:
         self.cm = np.array(self.cm)
         self.g_accuracy = accuracy_score(c_lab, t_lab)
         self.g_error = 1-self.g_accuracy
+        self.result = f"Cases remplies : {self.fill_mask.sum()}, Nombre d'erreurs : {self.nb_erreurs}, Score : {self.fill_mask.sum() - self.nb_erreurs}"
     def metrics_calculation(self):
         '''
         Calculate a number of metrics from the confusion matrix. Recall per class as TP/TP+FN
@@ -67,7 +68,6 @@ class Evaluator:
         Custom metrics are stacked in a matrix and normalized on total number of test samples.
         '''
         self.recall = [self.cm[i, i] / self.cm[i, :].sum() for i in range(0,10)]
-        print('metrics calculation')
         self.precision = [self.cm[i, i]/self.cm[:, i].sum() for i in range(0,10)]
         FP_error = np.array([self.cm[0, i] for i in range(1, 10)])
         FN_error = np.array([self.cm[i, 0] for i in range(1, 10)])
@@ -78,6 +78,9 @@ class Evaluator:
         FN_total = FN_error + FN_symbol
         self.custom_metrics = np.vstack((FP_error, FP_symbol, FP_total, FN_error, FN_symbol, FN_total))
         self.metrics_n = self.custom_metrics / self.cm.sum() * 100
+        total = self.metrics_n.sum(axis=1)
+        self.TFP = total[2]
+        self.TFN = total[5]
     def cm_plot(self):
         '''
         Plot the confusion matrix

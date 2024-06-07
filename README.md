@@ -11,8 +11,6 @@ Link to app on streamlit community cloud [here](https://trec-coding.streamlit.ap
 ### CV and interface aspects
 
 * Extraction : Display scanned resultsheet in transparency to see the grid better, and grid in black lines
-* Correction : Done: use np.std > 10 to detect boxes with something in it:
-  * To implement in evaluate and in correction.
 * Add the possibility to take a picture of the scanned result sheet
   * Need improvement of box detection even with variation in sheet dimension : try SAM or keras CV module
 * Problem with number of errors, predicted labels in Model/correction pages: cannot repeat so far.

@@ -28,8 +28,7 @@ def roi_display_streamlit(prefix):
                                     value=12, key=f'{prefix}_row-size')
     roi_display(prefix, st.session_state[st.session_state[f'{prefix}_labels_display']],
                 st.session_state['ex_roi_symbols'], row_size=st.session_state[f'{prefix}_row-size'])
-def roi_display(prefix="", labels = None,
-                image_array= st.session_state['ex_roi_symbols'], mask = None, row_size = None):
+def roi_display(prefix="", labels = None, image_array= st.session_state['ex_roi_symbols'], mask = None, row_size = None):
     '''
     Display function used to show all symbols images ordered by labels
     :param image_list: array of X images (X, height, width)

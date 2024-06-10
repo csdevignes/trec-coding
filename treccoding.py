@@ -51,7 +51,7 @@ if uploaded_file is not None:
     if st.button("Détecter les boites"):
         box_extraction_process()
     start_roi_extraction = 'ex_box_coord' in st.session_state and len(st.session_state.get('ex_box_coord', [])) == 400
-# ROI image extraction
+    # ROI image extraction
     if start_roi_extraction:
         def store_roi_symbols():
             r = extract.ROIExtract(b.img_rot)

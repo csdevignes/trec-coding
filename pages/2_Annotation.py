@@ -35,5 +35,3 @@ if 'ex_roi_symbols' in st.session_state and 'annot_labels' in st.session_state:
         file_name=f'{file_name}.csv',
         mime="text/csv"
     )
-
-st.write(st.session_state)

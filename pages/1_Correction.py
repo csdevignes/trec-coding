@@ -69,5 +69,3 @@ else:
             file_name=f'{file_name}.csv',
             mime="text/csv"
         )
-
-st.write(st.session_state)

@@ -6,6 +6,11 @@ Symbols classification for automatic correction for the coding part of the TREC 
 To run app in local, use ``streamlit run treccoding.py``
 Link to app on streamlit community cloud [here](https://trec-coding.streamlit.app/)
 
+To try it, use one of the resultsheets from scan_resultsheets folder.
+
+> Better to run community cloud app on Chrome browser.
+> On Firefox, problems with file uploading can happen.
+
 ## Improvements
 
 ### CV and interface aspects
@@ -14,6 +19,7 @@ Link to app on streamlit community cloud [here](https://trec-coding.streamlit.ap
 * Add the possibility to take a picture of the scanned result sheet
   * Need improvement of box detection even with variation in sheet dimension : try SAM or keras CV module
 * Jupyter only : problem with roi_display_jup when not enough symbol to make 2 lines
+* Set default label on homepage roi display
 
 ### Deep learning aspects
 

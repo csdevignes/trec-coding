@@ -20,7 +20,6 @@ def roi_display_streamlit(prefix):
                         'correct_labels': "Corrections en mémoire",
                        'predicted_labels': "Prédictions du modèle"}
         st.radio("Charger les labels :", label_list,
-                 value = 'blank_labels',
                  format_func=lambda x: label_match[x],
                  key=f"{prefix}_labels_display")
     with controls[1]:

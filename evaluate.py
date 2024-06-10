@@ -2,7 +2,7 @@
 This file contains methods to evaluate predictions
 and to correct the scanned resultsheets
 '''
-import keras
+from keras import saving
 import matplotlib.pyplot as plt
 import numpy as np
 import cv2 as cv
@@ -29,7 +29,7 @@ class Evaluator:
         the highest probability class from y_predicted, if the probability is > 0.7. Otherwise it
         is considered as not reliable prediction and affected to class 0 (error).
         '''
-        model = keras.models.load_model(modelpath)
+        model = saving.load_model(modelpath)
         self.y_predicted = model.predict(self.X)
         self.labels["predicted_labels"] = np.array([int(np.argmax(i) + 1) if max(i) > 0.7 else 0 for i in self.y_predicted])
         return self.labels["predicted_labels"]

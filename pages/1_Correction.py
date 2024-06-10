@@ -21,7 +21,8 @@ if 'ex_roi_symbols' not in st.session_state:
     st.write("Veuillez d'abord extraire les symboles")
 
 else:
-    tcutil.set_labels()
+    l = tcutil.Labels()
+    l.set_labels()
     entrees = os.listdir("models/")
     model_list = [entree for entree in entrees if entree.endswith(".keras")]
     st.selectbox("Modèle à utiliser", model_list, key="model_path")
@@ -41,8 +42,8 @@ else:
         st.write(e.result)
         st.pyplot(e.cm_plot())
     with st.expander('Voir la grille corrigée'):
-        label_match = {'correct_labels': "Corrections",
-                       'predicted_labels': "Prédictions du modèle"}
+        label_match = {'predicted_labels': "Prédictions du modèle",
+                       'correct_labels': "Corrections"}
         st.radio("Labels tests :", ['predicted_labels', 'correct_labels'],
                  format_func=lambda x: label_match[x], index=0,
                  key=f"co_scan_label")

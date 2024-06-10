@@ -6,6 +6,7 @@ import numpy as np
 import os
 import streamlit as st
 
+import img_display
 from img_display import roi_display_jup
 import train, evaluate, tcutil
 
@@ -52,6 +53,5 @@ if 'dataset_picts' in st.session_state:
     st.pyplot(e.metrics_plot())
     st.write(f'Total false positive : {e.TFP}, Total false negative : {e.TFN}')
     if st.button("Show symbols"):
-        fig = roi_display_jup(e.X, e.fill_mask, range(len(e.X)), 20)
-        st.pyplot(fig)
-st.write(st.session_state)
+        img_display.roi_display(prefix='mo', labels=st.session_state['dataset_labels'],
+                                image_array=st.session_state['dataset_picts'], mask=e.fill_mask, row_size=20)

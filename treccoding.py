@@ -15,7 +15,8 @@ st.set_page_config(
 
 
 tcutil.sidebar_progress()
-tcutil.set_labels()
+l = tcutil.Labels()
+l.set_labels()
 
 st.markdown("""# trec-coding 
 Classification des symboles pour la correction du test de codage du TREC""")
@@ -62,6 +63,6 @@ if uploaded_file is not None:
             store_roi_symbols()
 
 if 'ex_roi_symbols' in st.session_state:
-        img_display.roi_display(prefix="ex")
+        img_display.roi_display_streamlit(prefix="ex")
         st.write("Continuer avec la correction ou l'annotation des données via le menu latéral")
 

@@ -17,6 +17,8 @@ Link to app on streamlit community cloud [here](https://trec-coding.streamlit.ap
 * Jupyter only : problem with roi_display_jup when not enough symbol to make 2 lines
 * Correction of grid : problem with color of boxes for errors : red/blue
 * Adapt visualisation functions so that they can be used also in model
+* Organize label management
+* Homogenize filtering : with mask i/o index
 
 ### Deep learning aspects
 

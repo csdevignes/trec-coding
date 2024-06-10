@@ -18,7 +18,8 @@ if 'ex_roi_symbols' not in st.session_state:
     st.write("Veuillez d'abord extraire les symboles")
 
 else:
-    tcutil.set_labels()
+    l = tcutil.Labels()
+    l.set_labels()
     tcutil.exclude_example('an')
     img_display.annotate(prefix="an", annotation=True)
 

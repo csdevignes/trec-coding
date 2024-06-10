@@ -7,15 +7,7 @@ import streamlit as st
 import numpy as np
 import cv2 as cv
 
-def roi_display(prefix="", keeper_indx=range(0, 200)):
-    '''
-    Display function used to show all symbols images ordered by labels
-    :param image_list: array of X images (X, height, width)
-    :param label_list: array of X labels (X,)
-    :param row_size:
-    :param excluded_indx:
-    :return:
-    '''
+def roi_display_streamlit(prefix):
     controls = st.columns(2)
     with controls[0]:
         label_list = []
@@ -34,23 +26,50 @@ def roi_display(prefix="", keeper_indx=range(0, 200)):
         size_match = {20: "Petit", 12: "Moyen", 6: "Grand"}
         st.select_slider("Taille:", [20, 12, 6], format_func=lambda x: size_match[x],
                                     value=12, key=f'{prefix}_row-size')
+    roi_display(prefix, st.session_state[st.session_state[f'{prefix}_labels_display']],
+                st.session_state['ex_roi_symbols'], row_size=st.session_state[f'{prefix}_row-size'])
+def roi_display(prefix="", labels = None,
+                image_array= st.session_state['ex_roi_symbols'], mask = None, row_size = None):
+    '''
+    Display function used to show all symbols images ordered by labels
+    :param image_list: array of X images (X, height, width)
+    :param label_list: array of X labels (X,)
+    :param row_size:
+    :param excluded_indx:
+    :return:
+    '''
+    if mask is None:
+        mask = np.full((len(image_array)), True)
+    if labels is None:
+        labels = np.ones(len(image_array))
+    if row_size is None:
+        row_size = 12
 
-    image_list_filtered = st.session_state['ex_roi_symbols'][keeper_indx]
-    label_list_filtered = st.session_state[st.session_state[f'{prefix}_labels_display']][keeper_indx]
+    image_list_filtered = image_array[mask]
+    label_list_filtered = labels[mask]
 
     for l in np.unique(label_list_filtered):
         st.header(f'Label {l}')
         label_mask = (label_list_filtered == l)
         img_indices = np.where(label_mask)[0]
-        grid = st.columns(st.session_state[f'{prefix}_row-size'])
+        grid = st.columns(row_size)
         col = 0
         for i, pixels in enumerate(image_list_filtered[img_indices]):
             with grid[col]:
                 st.image(pixels, img_indices[i])
-                col = (col + 1) % st.session_state[f'{prefix}_row-size']
+                col = (col + 1) % row_size
 def update_label(img_indice, loadto, prefix=""):
+    '''
+    In annotation or correction, updates a specific index in loadto labels (annot_labels or correct_labels)
+    using the position of the symbole associated with form entry. Used as callback function in annotate.
+    '''
     st.session_state[loadto][img_indice+9] = st.session_state[f'{prefix}_symbol{img_indice}']
 def load_label_from(loadto, prefix=""):
+    '''
+    For annotation and correction. Allows to load labels from blank, sheet or predicted
+    as 'loadto' labels which can be annot_labels or correct_labels, depending on where
+    the function is called.
+    '''
     label_match = {'blank_labels': "Vides (zeros)",
                    'sheet_labels': "Numéros de la feuille",
                    'annot_labels': "Annotations en mémoire",
@@ -121,11 +140,11 @@ def plot_results_scan(image, labels, sheet_labels, boxes):
     for i, gbox in enumerate(boxes[symbols_index]):
         x, y, w, h = gbox
         if (labels[i] == 0):
-            cv.rectangle(image_copy, (x, y), (x + w, y + h), (255, 0, 0), 3)
+            cv.rectangle(image_copy, (x, y), (x + w, y + h), (0, 0, 255), 3)
         elif (labels[i] == sheet_labels[i]):
             cv.rectangle(image_copy, (x, y), (x + w, y + h), (0, 255, 0), 3)
         else:
-            cv.rectangle(image_copy, (x, y), (x + w, y + h), (0, 0, 255), 3)
+            cv.rectangle(image_copy, (x, y), (x + w, y + h), (255, 0, 0), 3)
     return image_copy
 
 def roi_display_jup(symbols, labels, keeper_indx=range(0, 200), row_size = 12):

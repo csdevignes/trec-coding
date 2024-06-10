@@ -10,7 +10,8 @@ import extract
 import tcutil
 
 tcutil.sidebar_progress()
-tcutil.set_labels()
+l = tcutil.Labels()
+l.set_labels()
 
 # Loading and rotating scan
 uploaded_file = st.file_uploader("Upload feuille de résultat (format png)", type=['png'])

@@ -3,10 +3,9 @@ Multipage version of the streamlit app
 '''
 
 import streamlit as st
-import extract
-import img_display
-import tcutil
 import numpy as np
+
+import extract, img_display, tcutil
 
 st.set_page_config(
     page_title="TREC symbols correction",

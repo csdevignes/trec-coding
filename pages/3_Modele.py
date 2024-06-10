@@ -6,9 +6,7 @@ import numpy as np
 import os
 import streamlit as st
 
-import img_display
-from img_display import roi_display_jup
-import train, evaluate, tcutil
+import train, evaluate, tcutil, img_display
 
 
 tcutil.sidebar_progress()

@@ -5,9 +5,7 @@ This page aims to annotate images with correct number labels
 import numpy as np
 import streamlit as st
 
-import img_display
-import tcutil
-import train
+import img_display, tcutil, train
 
 tcutil.sidebar_progress()
 tcutil.sidebar_legend()

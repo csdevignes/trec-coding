@@ -3,14 +3,10 @@ TREC correction app - page Correction
 This page aims to correct scanned resultsheet and analyse results
 '''
 import os
-
 import numpy as np
 import streamlit as st
 
-import evaluate
-import img_display
-import tcutil
-import train
+import evaluate, img_display, tcutil, train
 
 tcutil.sidebar_progress()
 tcutil.sidebar_legend()

@@ -5,7 +5,6 @@ and to correct the scanned resultsheets
 from keras import saving
 import matplotlib.pyplot as plt
 import numpy as np
-import cv2 as cv
 import pandas as pd
 import streamlit as st
 from sklearn.metrics import confusion_matrix, accuracy_score

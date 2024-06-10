@@ -13,12 +13,7 @@ Link to app on streamlit community cloud [here](https://trec-coding.streamlit.ap
 * Extraction : Display scanned resultsheet in transparency to see the grid better, and grid in black lines
 * Add the possibility to take a picture of the scanned result sheet
   * Need improvement of box detection even with variation in sheet dimension : try SAM or keras CV module
-* Problem with number of errors, predicted labels in Model/correction pages: cannot repeat so far.
 * Jupyter only : problem with roi_display_jup when not enough symbol to make 2 lines
-* Correction of grid : problem with color of boxes for errors : red/blue
-* Adapt visualisation functions so that they can be used also in model
-* Organize label management
-* Homogenize filtering : with mask i/o index
 
 ### Deep learning aspects
 

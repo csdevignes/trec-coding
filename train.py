@@ -33,7 +33,7 @@ class Trainer:
     '''
     Load dataset and prepare it for use by the neural network.
     '''
-    def __init__(self, pict=None, data = None, datapath = None, removezeros = False):
+    def __init__(self, pict=None, data = None, datapath = None, removezeros = False, ext_w=76, ext_h=82):
         '''
         Several data source can be used :
         - pict : array of pictures (labels provided separately)
@@ -44,10 +44,10 @@ class Trainer:
             self.pict = pict
         elif data is not None:
             self.full_da = data
-            self.split_labels()
+            self.split_labels(ext_w, ext_h)
         elif datapath is not None:
             self.load_dataset(datapath)
-            self.split_labels()
+            self.split_labels(ext_w, ext_h)
         self.redimension_pict()
         if removezeros:
             self.remove_zero()
@@ -65,7 +65,7 @@ class Trainer:
                     self.full_da = np.append(self.full_da, da, axis=0)
             else:
                 continue
-    def split_labels(self, ext_w=76, ext_h=82):
+    def split_labels(self, ext_w, ext_h):
         '''
         Used when loading a saved dataset (pict + label). Split pict and label from full dataset,
         reshape both arrays according to width and height of pictures.

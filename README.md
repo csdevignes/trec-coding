@@ -22,6 +22,7 @@ To try it, use one of the resultsheets from scan_resultsheets folder.
 
 ### Deep learning aspects
 
+* Encoding of labels
 * Confusion matrix aesthetics: normalisation on true or pred, possibility to hide diagonal
 * Implement custom metrics and loss in training fit
-* Image augmentation
+* Image augmentation for error generation

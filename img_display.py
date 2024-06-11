@@ -146,24 +146,29 @@ def plot_results_scan(image, labels, sheet_labels, boxes):
             cv.rectangle(image_copy, (x, y), (x + w, y + h), (255, 0, 0), 3)
     return image_copy
 
-def roi_display_jup(symbols, labels, keeper_indx=range(0, 200), row_size = 12):
+def roi_display_jup(image_array, labels = None, mask = None, row_size = None):
     '''
-    Display function used to show all symbols images ordered by labels
-    :param image_list: array of X images (X, height, width)
-    :param label_list: array of X labels (X,)
-    :param row_size:
-    :param excluded_indx:
-    :return:
     '''
-    image_list_filtered = symbols[keeper_indx]
-    label_list_filtered = labels[keeper_indx]
+    if mask is None:
+        mask = np.full((len(image_array)), True)
+    if labels is None:
+        labels = np.ones(len(image_array))
+    if row_size is None:
+        row_size = 12
+
+    image_list_filtered = image_array[mask]
+    label_list_filtered = labels[mask]
 
     for l in np.unique(label_list_filtered):
         label_mask = (label_list_filtered == l)
         img_indices = np.where(label_mask)[0]
-
         n_rows = math.ceil(len(image_list_filtered[img_indices]) / row_size)
-        fig, axs = plt.subplots(n_rows, row_size, figsize=(row_size, n_rows))
+
+        if n_rows == 1:
+            fig, axs = plt.subplots(n_rows, row_size, figsize=(row_size, n_rows))
+            axs = np.reshape(axs, (1, row_size))
+        else:
+            fig, axs = plt.subplots(n_rows, row_size, figsize=(row_size, n_rows))
 
         for i, pixels in enumerate(image_list_filtered[img_indices]):
             row = i // row_size
@@ -172,7 +177,8 @@ def roi_display_jup(symbols, labels, keeper_indx=range(0, 200), row_size = 12):
             ax.imshow(pixels)
             ax.text(0.5, 1.02, str(img_indices[i]), transform=ax.transAxes, ha='center', va='bottom', fontsize=10)
             ax.axis('off')
+
         fig.suptitle(f'Label {l}', fontsize=16)
         fig.subplots_adjust(top=0.75)
         plt.show()
-    return fig
+    # return fig

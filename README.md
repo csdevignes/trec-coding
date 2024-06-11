@@ -18,7 +18,6 @@ To try it, use one of the resultsheets from scan_resultsheets folder.
 * Extraction : Display scanned resultsheet in transparency to see the grid better, and grid in black lines
 * Add the possibility to take a picture of the scanned result sheet
   * Need improvement of box detection even with variation in sheet dimension : try SAM or keras CV module
-* Jupyter only : problem with roi_display_jup when not enough symbol to make 2 lines
 * Set default label on homepage roi display
 
 ### Deep learning aspects

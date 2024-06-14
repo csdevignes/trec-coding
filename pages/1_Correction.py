@@ -16,9 +16,11 @@ if 'uploaded_file_name' in st.session_state:
 if 'ex_roi_symbols' not in st.session_state:
     st.write("Veuillez d'abord extraire les symboles")
 
+# If symbols have been extracted on homepage treccoding.py : proceed
 else:
     l = tcutil.Labels()
     l.set_labels()
+    # 1 - Automatic correction by one of the models
     entrees = os.listdir("models/")
     model_list = [entree for entree in entrees if entree.endswith(".keras")]
     st.selectbox("Modèle à utiliser", model_list, key="model_path")
@@ -31,12 +33,14 @@ else:
                      keeper_mask=st.session_state['co_keeper_mask'])
         st.write(e.result)
         st.pyplot(e.cm_plot())
+    # 2 - If manual adjustment have been performed to the correction, recalculate the score using these labels
     if st.button("Calculer les résultats avec la correction manuelle"):
         e.correction(correct_labels= st.session_state['sheet_labels'],
                      test_labels=st.session_state['correct_labels'],
                      keeper_mask=st.session_state['co_keeper_mask'])
         st.write(e.result)
         st.pyplot(e.cm_plot())
+    # 3 - Display corrected grid
     with st.expander('Voir la grille corrigée'):
         label_match = {'predicted_labels': "Prédictions du modèle",
                        'correct_labels': "Corrections"}
@@ -48,11 +52,12 @@ else:
                                       st.session_state["sheet_labels"],
                                       st.session_state['ex_box_coord'])
         st.image(res_scan)
-
+    # 4 - Verification of correction and manual adjustments
     st.header("Paramètres")
     tcutil.exclude_example("co")
     img_display.annotate(prefix="co", annotation=False)
 
+    # 5 - Optional save of dataset from correction
     if 'correct_labels' in st.session_state:
         st.header("Résultats :")
         d = train.Dataset(st.session_state['ex_roi_symbols'][st.session_state[f'co_mask']],

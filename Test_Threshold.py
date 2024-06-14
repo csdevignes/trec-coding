@@ -1,6 +1,5 @@
 '''
-TREC correction app - page 1
-This page aims to upload file, and extract images
+Page used to perform the test of threshold for extraction. Kept as archive purpose only.
 '''
 
 

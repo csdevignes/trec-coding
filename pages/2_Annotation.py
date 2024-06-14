@@ -15,13 +15,15 @@ if 'uploaded_file_name' in st.session_state:
 if 'ex_roi_symbols' not in st.session_state:
     st.write("Veuillez d'abord extraire les symboles")
 
+# If symbols have been extracted on homepage treccoding.py : proceed
 else:
     l = tcutil.Labels()
     l.set_labels()
     tcutil.exclude_example('an')
+    # 1 - Display and annotate symbols
     img_display.annotate(prefix="an", annotation=True)
 
-# Saving dataset
+# 2 - Saving dataset
 if 'ex_roi_symbols' in st.session_state and 'annot_labels' in st.session_state:
     d = train.Dataset(st.session_state['ex_roi_symbols'][st.session_state[f'an_mask']],
                       st.session_state['annot_labels'][st.session_state[f'an_mask']])

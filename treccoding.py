@@ -20,7 +20,7 @@ l.set_labels()
 st.markdown("""# trec-coding 
 Classification des symboles pour la correction du test de codage du TREC""")
 
-# Loading and rotating scan
+# 1 - Loading and rotating scan
 if st.toggle("Prendre une photo"):
     uploaded_file = st.camera_input("Photo de la feuille de résultat")
 else:
@@ -40,7 +40,7 @@ if uploaded_file is not None:
         st.image(b.plot_scan(b.img))
     with col2:
         st.image(b.plot_scan(b.img_rot))
-# Box extraction
+# 2 - Box extraction
     @st.experimental_fragment
     def box_extraction_process():
         b.extract_boxes_fast()
@@ -50,7 +50,7 @@ if uploaded_file is not None:
     if st.button("Détecter les boites"):
         box_extraction_process()
     start_roi_extraction = 'ex_box_coord' in st.session_state and len(st.session_state.get('ex_box_coord', [])) == 400
-    # ROI image extraction
+    # 3 -  ROI image extraction
     if start_roi_extraction:
         def store_roi_symbols():
             r = extract.ROIExtract(b.img_rot)
@@ -60,7 +60,7 @@ if uploaded_file is not None:
             st.session_state['ex_scan_img'] = b.img_rot
         if st.button("Extraire les symboles"):
             store_roi_symbols()
-
+# 4 - Display extracted ROI
 if 'ex_roi_symbols' in st.session_state:
         st.write("Continuer avec la correction ou l'annotation des données via le menu latéral")
         img_display.roi_display_streamlit(prefix="ex")

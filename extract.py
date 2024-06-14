@@ -17,7 +17,7 @@ class Boxdetection:
 
     def __init__(self, image_file = None, image_path = None):
         '''
-        When using with streamlit file uploader, use cv.imdecode line
+        When using with streamlit file uploader, use cv.imdecode with image_file binary
         When using with local file, use cv.imread together with image path
         (also modify in __init__)
         :param image_path: directory path to image file
@@ -59,7 +59,7 @@ class Boxdetection:
         self.gray = cv.cvtColor(self.img_rot, cv.COLOR_BGR2GRAY)
     def find_boxes(self, lower_threshold):
         '''
-        Run findcontour with a given threshold for binary image, then loops
+        Run OpenCV findcontour with a given threshold for binary image, then loops
         into the contours to keep only the ones corresponding to the right size
         and aspect ratio for the boxes.
         :param lower_threshold: int between 0 and 255
@@ -95,9 +95,8 @@ class Boxdetection:
         self.box_coord = boxdf_sorted.to_numpy()
     def extract_boxes_fast(self):
         '''
-        Iteration among thresholds for binary image, to find the one that
-        will allow for the detection of all the boxes (400). Then reorder
-        the box list top to bottom, and perform box alignment.
+        Iteration among thresholds for binary image, to find the one that will allow for the detection of all the
+        boxes (400). Then reorder the box list top to bottom, and perform box alignment. Worked for all images so far.
         '''
         max_box_detected = 0
         lower_TSt = 160
@@ -110,9 +109,9 @@ class Boxdetection:
         self.align_boxes()
     def extract_boxes_ext(self):
         '''
-        Iteration among all possible thresholds for binary image, to find the one that
-        will allow for the detection of all the boxes (400). Then reorder
-        the box list top to bottom, and perform box alignment.
+        Iteration among all possible thresholds for binary image, to find the one that will allow for the detection of
+        all the boxes (400). Then reorder the box list top to bottom, and perform box alignment.
+        May be used if extract_boxes_fast() fails to detect all (400) the boxes.
         '''
         max_box_detected = 0
         lower_TSt = 255
@@ -128,7 +127,7 @@ class Boxdetection:
         '''
         Display detected boxes
         :param coord: array of X coordinates (X, 4)
-        :return:
+        :return: img_box picture of image with coordinates plotted on
         '''
         img_box = _self.img_rot.copy()
         if coord.ndim > 1:
@@ -142,14 +141,13 @@ class Boxdetection:
 
 class ROIExtract:
     '''
-    Define parameters and methods needed for image (ROI) extraction from given box coordinates
-    Also includes symbols/numbers indexes and standard labels definition.
+    Defines parameters and methods needed for image (ROI) extraction from given box coordinates
+    Also includes symbols/numbers indexes.
     '''
     def __init__(self, image_rot):
         '''
         Loads image, defines indexes for symbols and numbers. Defines box width and height
-        Also defines standard labels.
-        :param image_rot: image (openCV loaded file)
+        :param image_rot: image
         '''
         self.img = image_rot
         intervals = [(20, 40), (60, 80), (100, 120), (140, 160), (180, 200), (220, 240), (260, 280), (300, 320),
@@ -161,7 +159,7 @@ class ROIExtract:
         self.height = 80
     def extract_roi_inside_box(self, coord):
         '''
-        Extract image (ROI) located inside given coordinates, on the scanned image
+        Extracts image (region of interest - ROI) located inside given coordinates, on the scanned image
         :param coord: list of 4 coordinates
         :return: image (ROI) of dimension [height, width]
         '''
@@ -171,9 +169,8 @@ class ROIExtract:
         return roi
     def extract_roi_symbols(self, coord_list):
         '''
-        Iterated through coordinates to extract all the images (ROI) corresponding
-        to symbols index. Boxes must be properly aligned and reordered for index
-        selection to work.
+        Iterates through coordinates to extract all the images (ROI) corresponding to symbols index.
+        Boxes must be properly aligned and reordered for index-based selection to work.
         :param coord_list: array of X coordinates (X, 4)
         '''
         self.roi_symbols = []
@@ -183,7 +180,7 @@ class ROIExtract:
         self.roi_symbols = np.array(self.roi_symbols)
     def extract_roi_all(self, coord_list):
         '''
-        Iterated through coordinates to extract all the images (ROI).
+        Iterates through coordinates to extract all the images (ROI), not only the symbols.
         :param coord_list: array of X coordinates (X, 4)
         '''
         self.roi_all = []

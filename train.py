@@ -26,19 +26,26 @@ class Dataset:
         self.df = pd.DataFrame(self.dataset)
         return self.df.to_csv(index=False, header=False).encode('utf-8')
     def save_csv(self, imagefile):
+        '''
+        Saves the dataset as .csv
+        :param imagefile: string, original name of the analyzed scanned image
+        '''
         file_name = imagefile.split('.')[0]
         np.savetxt(f'data_resultsheets/{file_name}.csv', self.dataset, fmt='%d', delimiter=',')
 
 class Trainer:
     '''
-    Load dataset and prepare it for use by the neural network.
+    Loads dataset and prepares it for use by the neural network.
     '''
     def __init__(self, pict=None, data = None, datapath = None, removezeros = False, ext_w=76, ext_h=82):
         '''
         Several data source can be used :
-        - pict : array of pictures (labels provided separately)
-        - data : array of pictures + labels (as the last column)
-        - datapath : string, path to folder containing data arrays (of picture + labels)
+        :param pict: array of pictures (X, width, height) (labels provided separately)
+        :param data: array of pictures (X, width*height+label) with labels (as the last column)
+        :param datapath: string, path to folder containing .csv with data arrays (of picture + labels)
+        :param removezeros: boolean, state if zero labelled pictures should be removed from dataset
+        :param ext_w: int, original width of the image in pixel
+        :param ext_h: int, original height of the image in pixel
         '''
         if pict is not None:
             self.pict = pict
@@ -53,7 +60,8 @@ class Trainer:
             self.remove_zero()
     def load_dataset(self, datapath):
         '''
-        Used when loading datasets from a datapath (pict + label)
+        Used when loading datasets from a folder. Iterated through .csv files and add them to the full_da array.
+        :param datapath: string, path to folder containing .csv with data arrays (of picture + labels)
         '''
         self.full_da = None
         for filename in os.listdir(datapath):
@@ -69,6 +77,8 @@ class Trainer:
         '''
         Used when loading a saved dataset (pict + label). Split pict and label from full dataset,
         reshape both arrays according to width and height of pictures.
+        :param ext_w: int, original width of the image in pixel
+        :param ext_h: int, original height of the image in pixel
         '''
         self.pict, self.label = np.split(self.full_da, [ext_w*ext_h], axis = 1)
         self.label = self.label.reshape((len(self.label),)).astype(np.int32)
@@ -77,6 +87,7 @@ class Trainer:
         '''
         Redimension pict into appropriate size for the neural network.
         Performs min/max normalization.
+        :param size: (int, int) size of redimensionned pictures
         '''
         self.size = size
         self.pict = self.pict.astype(np.float32)
@@ -99,7 +110,7 @@ class Trainer:
 
     def plot_mpi(self):
         '''
-        plot mean pixel intensity using full dataset (not redimensionned)
+        Plot mean pixel intensity using full dataset (not redimensionned)
         '''
         mean_pix = self.full_da[:, :-1].mean(axis=1)
         labels = self.full_da[:, -1]
@@ -113,6 +124,8 @@ class Trainer:
         '''
         Visualize all symbols from pict_redim (can take time with big datasets)
         Symbols are sorted per label.
+        :param labels: array (len(pict_redim),) of labels
+        :param imgperrow: int, number of symbols per row
         '''
         for l in np.unique(labels):
             label_mask = (labels == l)
@@ -134,7 +147,10 @@ class Trainer:
 
     def visualize_random_samples(self, pict, y = None, num_samples=5):
         '''
-        Visualize random symbols from pict_redim
+        Visualize random symbols from an array
+        :param pict: array (X, height, width) of symbols
+        :param y: array (X,) of labels
+        :param num_samples: int, number of samples to plot
         '''
         sample_indices = np.random.choice(len(pict), num_samples, replace=False)
         fig, axes = plt.subplots(1, num_samples, figsize=(12, 3))
@@ -146,5 +162,3 @@ class Trainer:
         plt.tight_layout()
         plt.show()
 
-if __name__ == "__main__":
-    t = Trainer(datapath="data_resultsheets/Test/")

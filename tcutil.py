@@ -1,13 +1,18 @@
 '''
-Multipage version of the streamlit app - Common functions
+TREC coding utilities - Common functions to several pages
 '''
+
 import numpy as np
 import streamlit as st
 
-def initialize_session(key):
-    if key not in st.session_state:
-        st.session_state[key] = None
+
 class Labels():
+    '''
+    Used to carry labels information. Contain information for the constant labels (blank and sheet)
+    If modifiable labels (annot, correct, predicted) are not set yet, initialize them.
+    All labels are stored in a labels attribute, which is a dict. Only used for result sheet data (containing 200
+    symbols).
+    '''
     def __init__(self):
         self.labels = {}
         self.labels['blank_labels'] = np.zeros(200, dtype=int)
@@ -32,6 +37,9 @@ class Labels():
             st.session_state['predicted_labels'] = st.session_state['blank_labels'].copy()
 
 def sidebar_progress():
+    '''
+    Sidebar function, used to display progress in workflow.
+    '''
     if 'uploaded_file_name' in st.session_state:
         st.sidebar.success(f"Fichier analysé : {repr(st.session_state['uploaded_file_name'])}")
     else:
@@ -40,6 +48,9 @@ def sidebar_progress():
         st.sidebar.success(f"Symboles extraits : {len(st.session_state['ex_roi_symbols'])}")
 
 def sidebar_legend():
+    '''
+    Sidebar function, used to display legend (number - symbol match) for correction and annotation.
+    '''
     legend = np.loadtxt("data_resultsheets/legend_pictures.csv", delimiter=',')
     leg_pict, leg_label = np.split(legend, [19740], axis=1)
     leg_pict = leg_pict.reshape((len(leg_pict), 141, 140))
@@ -55,9 +66,19 @@ def sidebar_legend():
                 f"<p style='position:relative; top:-20px; color:red; font-size:1.5em;padding:10px;margin:0;text-align:center;'>{leg_label[i]}</p>",
                 unsafe_allow_html=True)
 def detect_empty(picts):
+    '''
+    Method to detect empty boxes among an image array
+    :param picts: array of X images (X, height, width)
+    :return boolean mask array of dimension (X,)
+    '''
     fill_mask = picts.reshape((len(picts), picts.shape[1]*picts.shape[2])).std(axis=1) > 10
     return fill_mask
 def exclude_example(prefix):
+    '''
+    Method to display streamlit controllers allowing to exclude example boxes (first 9 boxes), and empty boxes (as
+    detected).
+    :param prefix: string, used to specify the context in which function is called
+    '''
     st.checkbox("Exclure les cases exemple", key=f'{prefix}_exclude-exemple', value=True)
     if st.session_state[f'{prefix}_exclude-exemple'] == True:
         excluded_index = range(9)
@@ -72,8 +93,3 @@ def exclude_example(prefix):
     st.session_state[f'{prefix}_mask'] = [True if f and k else False for f, k in zip(st.session_state[f'{prefix}_keeper_mask'],
                                                        st.session_state[f'{prefix}_fill_mask'])]
 
-
-if __name__ == "__main__":
-    labs = Labels()
-    labs.labels["predicted_labels"] = np.zeros(200, dtype=int)
-    print(labs.labels)
